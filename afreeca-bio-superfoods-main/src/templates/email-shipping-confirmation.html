@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Votre commande est expédiée - Green Afreeca</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse;">
+    <tr>
+      <td align="center" style="padding: 40px 0;">
+        <table role="presentation" style="width: 600px; max-width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); padding: 40px 40px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Green Afreeca 🌿</h1>
+              <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.9); font-style: italic;">Plantes d'Afrique, Energie authentique.</p>
+            </td>
+          </tr>
+
+          <!-- Shipping Icon -->
+          <tr>
+            <td style="padding: 40px 40px 20px 40px; text-align: center;">
+              <div style="width: 80px; height: 80px; background-color: #dbeafe; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;">
+                <span style="font-size: 40px;">🚚</span>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Main Content -->
+          <tr>
+            <td style="padding: 0 40px 30px 40px; text-align: center;">
+              <h2 style="margin: 0 0 15px 0; color: #1f2937; font-size: 24px;">Votre commande est en route ! 📦</h2>
+              <p style="margin: 0; color: #6b7280; font-size: 16px; line-height: 1.6;">
+                Bonne nouvelle ! Votre colis a été expédié et arrivera bientôt chez vous.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Tracking Info -->
+          <tr>
+            <td style="padding: 0 40px 30px 40px;">
+              <table role="presentation" style="width: 100%; border-collapse: collapse; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border-radius: 12px; overflow: hidden;">
+                <tr>
+                  <td style="padding: 25px; text-align: center;">
+                    <p style="margin: 0 0 10px 0; color: rgba(255,255,255,0.9); font-size: 14px;">Numéro de suivi</p>
+                    <p style="margin: 0 0 20px 0; color: #ffffff; font-size: 24px; font-weight: bold; letter-spacing: 2px;">{{TRACKING_NUMBER}}</p>
+                    <a href="{{TRACKING_URL}}" style="display: inline-block; padding: 12px 24px; background-color: #ffffff; color: #22c55e; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px;">
+                      Suivre mon colis 📍
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Delivery Timeline -->
+          <tr>
+            <td style="padding: 0 40px 30px 40px;">
+              <h3 style="margin: 0 0 20px 0; color: #1f2937; font-size: 18px;">Suivi de livraison 🗓️</h3>
+              <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                <!-- Step 1: Order Confirmed -->
+                <tr>
+                  <td style="padding: 15px 0;">
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="width: 40px; vertical-align: top;">
+                          <div style="width: 32px; height: 32px; background-color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: white; font-size: 14px;">✓</span>
+                          </div>
+                        </td>
+                        <td style="padding-left: 15px;">
+                          <p style="margin: 0 0 5px 0; color: #1f2937; font-weight: 600;">Commande confirmée</p>
+                          <p style="margin: 0; color: #6b7280; font-size: 14px;">{{ORDER_DATE}}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- Step 2: Shipped -->
+                <tr>
+                  <td style="padding: 15px 0;">
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="width: 40px; vertical-align: top;">
+                          <div style="width: 32px; height: 32px; background-color: #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: white; font-size: 14px;">✓</span>
+                          </div>
+                        </td>
+                        <td style="padding-left: 15px;">
+                          <p style="margin: 0 0 5px 0; color: #1f2937; font-weight: 600;">Colis expédié</p>
+                          <p style="margin: 0; color: #6b7280; font-size: 14px;">{{SHIPPING_DATE}}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <!-- Step 3: Delivery -->
+                <tr>
+                  <td style="padding: 15px 0;">
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="width: 40px; vertical-align: top;">
+                          <div style="width: 32px; height: 32px; background-color: #e5e7eb; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #6b7280; font-size: 14px;">3</span>
+                          </div>
+                        </td>
+                        <td style="padding-left: 15px;">
+                          <p style="margin: 0 0 5px 0; color: #1f2937; font-weight: 600;">Livraison prévue</p>
+                          <p style="margin: 0; color: #22c55e; font-size: 14px; font-weight: bold;">{{ESTIMATED_DELIVERY}}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Order Summary -->
+          <tr>
+            <td style="padding: 0 40px 30px 40px;">
+              <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f9fafb; border-radius: 12px; overflow: hidden;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <h4 style="margin: 0 0 15px 0; color: #1f2937; font-size: 16px;">Commande #{{ORDER_NUMBER}}</h4>
+                    <p style="margin: 0; color: #6b7280; font-size: 14px; line-height: 1.8;">
+                      {{ORDER_ITEMS_SUMMARY}}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Shipping Address -->
+          <tr>
+            <td style="padding: 0 40px 30px 40px;">
+              <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 20px; background-color: #f9fafb; border-radius: 12px;">
+                    <h4 style="margin: 0 0 10px 0; color: #1f2937; font-size: 16px;">📍 Livré à</h4>
+                    <p style="margin: 0; color: #6b7280; line-height: 1.6;">
+                      {{SHIPPING_NAME}}<br>
+                      {{SHIPPING_ADDRESS}}<br>
+                      {{SHIPPING_POSTAL_CODE}} {{SHIPPING_CITY}}<br>
+                      {{SHIPPING_COUNTRY}}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Help Section -->
+          <tr>
+            <td style="padding: 0 40px 30px 40px;">
+              <table role="presentation" style="width: 100%; border-collapse: collapse; border: 1px solid #e5e7eb; border-radius: 12px;">
+                <tr>
+                  <td style="padding: 20px; text-align: center;">
+                    <p style="margin: 0 0 10px 0; color: #1f2937; font-weight: 600;">Besoin d'aide ? 🤝</p>
+                    <p style="margin: 0; color: #6b7280; font-size: 14px;">
+                      Contactez notre équipe pour toute question sur votre livraison.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px 40px; background-color: #f9fafb; text-align: center;">
+              <p style="margin: 0 0 10px 0; color: #6b7280; font-size: 14px;">
+                Une question ? Contactez-nous !
+              </p>
+              <p style="margin: 0 0 5px 0;">
+                <a href="mailto:green-afreeca@outlook.fr" style="color: #22c55e; text-decoration: none;">green-afreeca@outlook.fr</a>
+              </p>
+              <p style="margin: 0 0 20px 0;">
+                <a href="tel:+33627857533" style="color: #22c55e; text-decoration: none;">06 27 85 75 33</a>
+              </p>
+              <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                © 2024 Green Afreeca. Tous droits réservés.<br>
+                4 rue Bobby Sands - 93200 Saint-Denis, France
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

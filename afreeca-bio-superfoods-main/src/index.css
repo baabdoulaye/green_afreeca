@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Couleurs de fond - Blanc et gris clair pour le design minimaliste */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 15%;
+
+    /* Surfaces de carte */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 15%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 15%;
+
+    /* Vert principal - Couleur de marque Green Afreeca */
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 142 76% 86%;
+    --primary-dark: 142 76% 26%;
+
+    /* Jaune - Accent pour les highlights et éléments importants */
+    --accent: 45 93% 58%;
+    --accent-foreground: 0 0% 15%;
+    --accent-light: 45 93% 88%;
+
+    /* Rouge - Pour les CTA et éléments d'action */
+    --secondary: 0 72% 51%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-light: 0 72% 91%;
+
+    /* Muted - Gris clair pour les éléments secondaires */
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Bordures et inputs */
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 142 76% 36%;
+
+    /* Radius pour design moderne */
+    --radius: 0.75rem;
+
+    /* Gradients personnalisés */
+    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
+    --gradient-hero: linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(45 93% 58%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
+    
+    /* Ombres élégantes */
+    --shadow-soft: 0 2px 8px hsla(0, 0%, 0%, 0.08);
+    --shadow-medium: 0 4px 16px hsla(0, 0%, 0%, 0.12);
+    --shadow-strong: 0 8px 24px hsla(0, 0%, 0%, 0.16);
+    --shadow-glow-green: 0 0 40px hsla(142, 76%, 36%, 0.2);
+    --shadow-glow-yellow: 0 0 40px hsla(45, 93%, 58%, 0.2);
+
+    /* Transitions fluides */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 15%;
+    --sidebar-primary: 142 76% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 15%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 142 76% 36%;
+  }
+
+  .dark {
+    --background: 0 0% 10%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 142 76% 46%;
+    --primary-foreground: 0 0% 10%;
+    --primary-light: 142 76% 26%;
+    --primary-dark: 142 76% 56%;
+
+    --accent: 45 93% 68%;
+    --accent-foreground: 0 0% 10%;
+    --accent-light: 45 93% 28%;
+
+    --secondary: 0 72% 61%;
+    --secondary-foreground: 0 0% 10%;
+    --secondary-light: 0 72% 31%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 142 76% 46%;
+
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 142 76% 46%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 142 76% 46%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

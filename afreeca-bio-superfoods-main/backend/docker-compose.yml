@@ -1,0 +1,37 @@
+# docker-compose.yml
+version: "3.8"
+
+services:
+  # ----------------------------------------------------
+  # SERVICE 1 : BACKEND NODE.JS
+  # ----------------------------------------------------
+  api:
+    build: .
+    container_name: greenafreeca_api
+    restart: always
+    ports:
+      - "3000:3000" # Ton API sera accessible via http://localhost:3000
+    volumes:
+      - ./:/app # Monte le répertoire courant dans le conteneur
+      - /app/node_modules # Sauf le node_modules pour éviter les conflits
+    environment:
+      # L'API Node.js se connecte au SERVICE MongoDB nommé 'mongo_db'
+      MONGO_URI: mongodb://mongo_db:27017/greenafricadb
+      PORT: 3000
+    depends_on:
+      - mongo_db
+
+  # ----------------------------------------------------
+  # SERVICE 2 : BASE DE DONNÉES MONGODB
+  # ----------------------------------------------------
+  mongo_db:
+    image: mongo:latest
+    container_name: greenafreeca_mongodb
+    restart: always
+    ports:
+      - "27017:27017" # Permet d'accéder à MongoDB Compass
+    volumes:
+      - mongo_data:/data/db # Persistance des données (obligatoire !)
+
+volumes:
+  mongo_data:
