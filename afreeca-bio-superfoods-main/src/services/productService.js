@@ -1,3 +1,4 @@
+//productService.js
 import axios from "axios";
 
 // On écrit l'adresse EN DUR pour être sûr à 100% que ça marche
