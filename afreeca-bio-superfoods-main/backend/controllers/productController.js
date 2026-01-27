@@ -68,3 +68,17 @@ exports.createProduct = async (req, res) => {
 };
 // NOTE : Les fonctions pour créer, mettre à jour et supprimer nécessitent
 // l'authentification Admin et seront ajoutées plus tard.
+// Supprimer un produit
+exports.deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Produit non trouvé" });
+    }
+    res.status(200).json({ success: true, data: {} });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};

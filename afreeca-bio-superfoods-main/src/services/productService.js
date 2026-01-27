@@ -29,5 +29,32 @@ const getProductById = async (id) => {
   }
 };
 
-const productService = { getProducts, getProductById };
+const createProduct = async (productData) => {
+  try {
+    const response = await axios.post(API_URL, productData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Erreur lors de la création :", error);
+    throw error;
+  }
+};
+
+// 4. Supprimer un produit (DELETE)
+const deleteProduct = async (id) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Erreur lors de la suppression :", error);
+    throw error;
+  }
+};
+
+// N'oublie pas de l'ajouter à l'export en bas
+const productService = {
+  getProducts,
+  getProductById,
+  createProduct,
+  deleteProduct,
+};
 export default productService;

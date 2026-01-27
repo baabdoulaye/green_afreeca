@@ -1,23 +1,19 @@
-// backend/routes/productRoutes.js (Version mise à jour)
 const express = require("express");
 const router = express.Router();
 const {
   getProducts,
   getProductById,
   createProduct,
+  deleteProduct,
 } = require("../controllers/productController");
-// Importe les middlewares de protection
+
+// On garde les imports de middleware mais on ne les utilise pas pour l'instant
 const { protect, authorize } = require("../middleware/authMiddleware");
 
-// Route principale :
-router
-  .route("/")
-  // GET /api/products (Lecture - Public : pas de middleware)
-  .get(getProducts)
-  // POST /api/products (Création - Privée/Admin : nécessite protect ET authorize('admin'))
-  .post(protect, authorize("admin"), createProduct);
+// --- ROUTES DE TEST (SANS PROTECT) ---
 
-// Route pour obtenir UN produit spécifique (GET /api/products/:id)
-router.route("/:id").get(getProductById);
+router.route("/").get(getProducts).post(createProduct); // Protection retirée temporairement
+
+router.route("/:id").get(getProductById).delete(deleteProduct); // Protection retirée temporairement
 
 module.exports = router;

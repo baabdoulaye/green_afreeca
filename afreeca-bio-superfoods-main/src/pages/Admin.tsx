@@ -1,206 +1,350 @@
-/**
- * Page Admin - Dashboard administrateur
- * 
- * Gestion des produits, commandes et utilisateurs
- * NOTE: Version frontend uniquement pour l'instant, nécessite un backend pour être fonctionnel
- */
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Package, ShoppingCart, Users, TrendingUp } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Package, ShoppingCart, Users, Trash2, Edit, Plus } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import productService from "../services/productService";
 
 const Admin = () => {
-  // États pour les statistiques (données statiques pour l'instant)
-  const [stats] = useState({
-    totalProducts: 4,
+  const { toast } = useToast();
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // État pour le nouveau produit
+  const [newProduct, setNewProduct] = useState({
+    name: "",
+    price: "",
+    category: "Jus",
+    slug: "",
+    description: "",
+  });
+
+  const [stats, setStats] = useState({
+    totalProducts: 0,
     totalOrders: 42,
     totalUsers: 128,
-    revenue: 3456.50
+    revenue: 3456.5,
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const data = await productService.getProducts();
+      setProducts(data || []);
+      setStats((prev) => ({ ...prev, totalProducts: data?.length || 0 }));
+    } catch (error) {
+      console.error("Erreur fetchData:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Préparation des données pour le schéma Mongoose
+    const productData = {
+      name: newProduct.name,
+      slug: newProduct.slug.toLowerCase().trim(),
+      price: parseFloat(newProduct.price.toString().replace(",", ".")),
+      category: newProduct.category,
+      description:
+        newProduct.description ||
+        "Un super-aliment d'exception, riche en nutriments et préparé avec soin. 🌿",
+      stock: 50,
+      image_url: "/images/baobab-poudre.jpg", // Image par défaut
+      marketing_claim: "Naturellement puissant.",
+      is_bio: true,
+    };
+
+    try {
+      await productService.createProduct(productData);
+
+      setIsDialogOpen(false);
+      setNewProduct({
+        name: "",
+        price: "",
+        category: "Jus",
+        slug: "",
+        description: "",
+      });
+      fetchData();
+
+      toast({
+        title: "Produit créé ! ✨",
+        description: `${productData.name} a bien été ajouté au catalogue.`,
+      });
+    } catch (error: any) {
+      console.error("Erreur création:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur lors de la création",
+        description:
+          error.response?.data?.error || "Vérifie les données envoyées.",
+      });
+    }
+  };
+
+  const handleDelete = async (id: string, productName: string) => {
+    if (window.confirm(`Voulez-vous vraiment supprimer ${productName} ?`)) {
+      try {
+        await productService.deleteProduct(id);
+        fetchData();
+
+        toast({
+          variant: "destructive",
+          title: "Produit supprimé",
+          description: `${productName} a été retiré de la base de données.`,
+        });
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Erreur",
+          description: "Impossible de supprimer ce produit.",
+        });
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* En-tête */}
-      <div className="bg-gradient-primary py-8 mb-8">
+      {/* Header avec dégradé subtil */}
+      <div className="bg-gradient-to-r from-green-50 to-white py-8 mb-8 border-b">
         <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold text-primary mb-2">Dashboard Admin</h1>
-          <p className="text-muted-foreground">Gestion de Green Afreeca</p>
+          <h1 className="text-4xl font-bold text-[#22c55e] mb-2 text-left">
+            Dashboard Admin
+          </h1>
+          <p className="text-muted-foreground text-left">
+            Gestion de Green Afreeca — Version Connectée 🔌
+          </p>
         </div>
       </div>
 
       <div className="container mx-auto px-4 pb-16">
-        {/* Cartes de statistiques */}
+        {/* Stats cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="p-6 hover:shadow-elegant transition-all">
+          <Card className="p-6 border-none shadow-sm hover:shadow-md transition-all">
             <div className="flex items-center justify-between mb-4">
-              <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
-                <Package className="h-6 w-6 text-primary" />
+              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                <Package className="h-6 w-6 text-[#22c55e]" />
               </div>
-              <span className="text-3xl font-bold text-primary">{stats.totalProducts}</span>
+              <span className="text-3xl font-bold text-gray-800">
+                {stats.totalProducts}
+              </span>
             </div>
-            <h3 className="text-sm font-semibold text-muted-foreground">Produits</h3>
+            <h3 className="text-sm font-semibold text-muted-foreground text-left">
+              Produits en BDD
+            </h3>
           </Card>
-
-          <Card className="p-6 hover:shadow-elegant transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
-                <ShoppingCart className="h-6 w-6 text-accent-foreground" />
-              </div>
-              <span className="text-3xl font-bold text-accent-foreground">{stats.totalOrders}</span>
-            </div>
-            <h3 className="text-sm font-semibold text-muted-foreground">Commandes</h3>
-          </Card>
-
-          <Card className="p-6 hover:shadow-elegant transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="h-12 w-12 rounded-full bg-secondary/20 flex items-center justify-center">
-                <Users className="h-6 w-6 text-secondary" />
-              </div>
-              <span className="text-3xl font-bold text-secondary">{stats.totalUsers}</span>
-            </div>
-            <h3 className="text-sm font-semibold text-muted-foreground">Utilisateurs</h3>
-          </Card>
-
-          <Card className="p-6 hover:shadow-elegant transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-primary" />
-              </div>
-              <span className="text-3xl font-bold text-primary">{stats.revenue.toFixed(2)}€</span>
-            </div>
-            <h3 className="text-sm font-semibold text-muted-foreground">Revenu</h3>
-          </Card>
+          {/* ... autres stats si tu veux les remplir plus tard ... */}
         </div>
 
-        {/* Tabs de gestion */}
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="products">Produits</TabsTrigger>
-            <TabsTrigger value="orders">Commandes</TabsTrigger>
-            <TabsTrigger value="users">Utilisateurs</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 bg-gray-100 p-1 rounded-xl">
+            <TabsTrigger value="products" className="rounded-lg font-semibold">
+              Produits
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="rounded-lg font-semibold">
+              Commandes
+            </TabsTrigger>
+            <TabsTrigger value="users" className="rounded-lg font-semibold">
+              Utilisateurs
+            </TabsTrigger>
           </TabsList>
 
-          {/* Onglet Produits */}
           <TabsContent value="products">
-            <Card className="p-6">
+            <Card className="p-6 border-none shadow-sm">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-foreground">Gestion des Produits</h2>
-                <Button>Ajouter un produit</Button>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Catalogue Dynamique
+                </h2>
+
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-[#22c55e] hover:bg-[#16a34a] gap-2 shadow-sm shadow-green-200">
+                      <Plus className="h-4 w-4" /> Ajouter un produit
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px] rounded-3xl">
+                    <DialogHeader>
+                      <DialogTitle className="text-2xl font-bold text-[#22c55e]">
+                        Nouveau Produit 🌿
+                      </DialogTitle>
+                      <DialogDescription>
+                        Entrez les détails du nouveau produit pour votre
+                        boutique.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Nom</Label>
+                        <Input
+                          id="name"
+                          value={newProduct.name}
+                          onChange={(e) =>
+                            setNewProduct({
+                              ...newProduct,
+                              name: e.target.value,
+                            })
+                          }
+                          placeholder="Lait de coco"
+                          required
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="price">Prix (€)</Label>
+                          <Input
+                            id="price"
+                            value={newProduct.price}
+                            onChange={(e) =>
+                              setNewProduct({
+                                ...newProduct,
+                                price: e.target.value,
+                              })
+                            }
+                            placeholder="6.50"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="category">Catégorie</Label>
+                          <select
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                            value={newProduct.category}
+                            onChange={(e) =>
+                              setNewProduct({
+                                ...newProduct,
+                                category: e.target.value,
+                              })
+                            }
+                          >
+                            <option value="Jus">Jus</option>
+                            <option value="Poudre">Poudre</option>
+                            <option value="Jus/Poudre">Jus/Poudre</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="slug">Slug (URL)</Label>
+                        <Input
+                          id="slug"
+                          value={newProduct.slug}
+                          onChange={(e) =>
+                            setNewProduct({
+                              ...newProduct,
+                              slug: e.target.value,
+                            })
+                          }
+                          placeholder="lait-coco-vanille"
+                          required
+                        />
+                      </div>
+                      <DialogFooter className="pt-4">
+                        <Button
+                          type="submit"
+                          className="w-full bg-[#22c55e] hover:bg-[#16a34a]"
+                        >
+                          Créer le produit
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
-              <div className="space-y-4">
-                <div className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-all">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold text-foreground">Jus de Bouille (Baobab)</h3>
-                      <p className="text-sm text-muted-foreground">1 litre - 8,00€</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">Modifier</Button>
-                      <Button variant="outline" size="sm">Supprimer</Button>
-                    </div>
-                  </div>
+
+              {loading ? (
+                <div className="text-center py-20 italic text-gray-400 animate-pulse">
+                  Mise à jour du stock...
                 </div>
-                <div className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-all">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold text-foreground">Bissap</h3>
-                      <p className="text-sm text-muted-foreground">1 litre - 6,00€</p>
+              ) : (
+                <div className="space-y-4">
+                  {products.map((p) => (
+                    <div
+                      key={p._id}
+                      className="p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all shadow-sm flex justify-between items-center"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="h-14 w-14 rounded-xl bg-gray-100 overflow-hidden border">
+                          <img
+                            src={`http://localhost:3000${p.image_url}`}
+                            className="w-full h-full object-cover"
+                            alt={p.name}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src =
+                                "https://placehold.co/100x100?text=BIO";
+                            }}
+                          />
+                        </div>
+                        <div className="text-left">
+                          <h3 className="font-bold text-gray-900 leading-tight">
+                            {p.name}
+                          </h3>
+                          <p className="text-sm font-medium text-[#22c55e] uppercase tracking-wider">
+                            {p.category} — {p.price.toFixed(2)}€
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl border-gray-200"
+                          onClick={() =>
+                            alert("Modification bientôt disponible !")
+                          }
+                        >
+                          <Edit className="h-4 w-4 mr-1" /> Modifier
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl border-gray-200 text-red-500 hover:bg-red-50 hover:text-red-700"
+                          onClick={() => handleDelete(p._id, p.name)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">Modifier</Button>
-                      <Button variant="outline" size="sm">Supprimer</Button>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-                <div className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-all">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold text-foreground">Moringa</h3>
-                      <p className="text-sm text-muted-foreground">100 grammes - 9,00€</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">Modifier</Button>
-                      <Button variant="outline" size="sm">Supprimer</Button>
-                    </div>
-                  </div>
-                </div>
-                <div className="p-4 border border-border rounded-lg hover:bg-muted/50 transition-all">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-semibold text-foreground">Gingembre Bio</h3>
-                      <p className="text-sm text-muted-foreground">1 litre - 7,00€</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm">Modifier</Button>
-                      <Button variant="outline" size="sm">Supprimer</Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              )}
             </Card>
           </TabsContent>
 
-          {/* Onglet Commandes */}
           <TabsContent value="orders">
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold text-foreground mb-6">Gestion des Commandes</h2>
-              <div className="bg-muted/50 p-8 rounded-lg text-center">
-                <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground mb-4">
-                  La gestion des commandes nécessite une connexion au backend
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Activez Lovable Cloud pour activer cette fonctionnalité
-                </p>
-              </div>
+            <Card className="p-20 text-center border-none shadow-sm">
+              <ShoppingCart className="h-12 w-12 text-blue-200 mx-auto mb-4" />
+              <p className="text-gray-400">Aucune commande pour le moment.</p>
             </Card>
           </TabsContent>
 
-          {/* Onglet Utilisateurs */}
           <TabsContent value="users">
-            <Card className="p-6">
-              <h2 className="text-2xl font-bold text-foreground mb-6">Gestion des Utilisateurs</h2>
-              <div className="bg-muted/50 p-8 rounded-lg text-center">
-                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground mb-4">
-                  La gestion des utilisateurs nécessite une connexion au backend
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Activez Lovable Cloud pour activer cette fonctionnalité
-                </p>
-              </div>
+            <Card className="p-20 text-center border-none shadow-sm">
+              <Users className="h-12 w-12 text-purple-200 mx-auto mb-4" />
+              <p className="text-gray-400">
+                Accès restreint à la base de données utilisateurs.
+              </p>
             </Card>
           </TabsContent>
         </Tabs>
-
-        {/* Avertissement Backend */}
-        <Card className="p-6 mt-8 bg-accent/10 border-accent">
-          <div className="flex items-start gap-4">
-            <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
-              <span className="text-xl">⚠️</span>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-foreground mb-2">Fonctionnalité Backend Requise</h3>
-              <p className="text-muted-foreground mb-4">
-                Pour activer pleinement ce dashboard (gestion des commandes, utilisateurs, authentification, base de données), 
-                vous devez connecter un backend. Lovable propose Lovable Cloud qui vous donne accès à :
-              </p>
-              <ul className="list-disc list-inside text-muted-foreground space-y-1 mb-4">
-                <li>Base de données PostgreSQL</li>
-                <li>Authentification utilisateur</li>
-                <li>Stockage de fichiers</li>
-                <li>API serverless</li>
-                <li>Intégration Stripe pour les paiements</li>
-              </ul>
-              <Link to="/">
-                <Button>Retour à l'accueil</Button>
-              </Link>
-            </div>
-          </div>
-        </Card>
       </div>
     </div>
   );
