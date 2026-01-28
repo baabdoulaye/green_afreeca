@@ -1,12 +1,20 @@
 /**
  * Page Panier - Gestion du panier d'achat
- * 
+ *
  * Affiche les produits dans le panier avec possibilité de modifier les quantités
  * Utilise le CartContext pour la gestion globale du panier
  */
 
 import { Link } from "react-router-dom";
-import { Trash2, Plus, Minus, ShoppingBag, ShieldCheck, Truck, CreditCard } from "lucide-react";
+import {
+  Trash2,
+  Plus,
+  Minus,
+  ShoppingBag,
+  ShieldCheck,
+  Truck,
+  CreditCard,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -28,12 +36,11 @@ const Cart = () => {
             Votre panier est vide 🛒
           </h2>
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-            Découvrez nos super-aliments africains bio et commencez votre voyage vers une meilleure santé ! 🌿
+            Découvrez nos super-aliments africains bio et commencez votre voyage
+            vers une meilleure santé !
           </p>
           <Link to="/produits">
-            <Button size="lg">
-              Découvrir nos produits ✨
-            </Button>
+            <Button size="lg">Découvrir nos produits</Button>
           </Link>
         </div>
       </div>
@@ -54,13 +61,16 @@ const Cart = () => {
               Vos articles ({items.length}) 📦
             </h2>
             {items.map((item, index) => (
-              <Card 
+              <Card
                 key={`${item.id}-${item.variant}`}
                 className="p-4 animate-fade-in-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="flex gap-4">
-                  <Link to={`/produits/${item.id}`} className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                  <Link
+                    to={`/produits/${item.id}`}
+                    className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden"
+                  >
                     <img
                       src={item.image}
                       alt={item.name}
@@ -97,7 +107,13 @@ const Cart = () => {
                         variant="outline"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1, item.variant)}
+                        onClick={() =>
+                          updateQuantity(
+                            item.id,
+                            item.quantity - 1,
+                            item.variant,
+                          )
+                        }
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
@@ -108,7 +124,13 @@ const Cart = () => {
                         variant="outline"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1, item.variant)}
+                        onClick={() =>
+                          updateQuantity(
+                            item.id,
+                            item.quantity + 1,
+                            item.variant,
+                          )
+                        }
                       >
                         <Plus className="h-3 w-3" />
                       </Button>
@@ -129,7 +151,10 @@ const Cart = () => {
               {/* Détail des articles */}
               <div className="space-y-3 mb-4 max-h-48 overflow-y-auto">
                 {items.map((item) => (
-                  <div key={`${item.id}-${item.variant}`} className="flex justify-between text-sm">
+                  <div
+                    key={`${item.id}-${item.variant}`}
+                    className="flex justify-between text-sm"
+                  >
                     <span className="text-muted-foreground truncate max-w-[60%]">
                       {item.name} ({item.dose}) x{item.quantity}
                     </span>
@@ -149,11 +174,14 @@ const Cart = () => {
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Livraison</span>
-                  <span>{shipping === 0 ? "Gratuite 🎉" : `${shipping.toFixed(2)}€`}</span>
+                  <span>
+                    {shipping === 0 ? "Gratuite 🎉" : `${shipping.toFixed(2)}€`}
+                  </span>
                 </div>
                 {totalPrice < 30 && (
                   <p className="text-xs text-primary">
-                    💡 Plus que {(30 - totalPrice).toFixed(2)}€ pour la livraison gratuite !
+                    💡 Plus que {(30 - totalPrice).toFixed(2)}€ pour la
+                    livraison gratuite !
                   </p>
                 )}
               </div>
@@ -170,7 +198,7 @@ const Cart = () => {
                   Passer la commande 🚀
                 </Button>
               </Link>
-              
+
               <Link to="/produits">
                 <Button variant="outline" size="lg" className="w-full">
                   Continuer mes achats

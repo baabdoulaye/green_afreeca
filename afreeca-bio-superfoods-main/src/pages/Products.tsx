@@ -63,10 +63,10 @@ const Products = () => {
       {/* HEADER */}
       <section className="py-12 text-center">
         <h1 className="text-4xl font-bold text-[#22c55e] mb-2">
-          Nos Super-Aliments Africains 🌿
+          Nos Super-Aliments Africains
         </h1>
         <p className="text-gray-500 text-sm">
-          Des produits naturels, bio et puissants pour votre bien-être ✨
+          Des produits naturels, bio et puissants pour votre bien-être
         </p>
       </section>
 
@@ -185,10 +185,10 @@ const Products = () => {
       {/* Footer "Besoin d'aide" */}
       <section className="mt-20 py-12 bg-green-50/30 text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Besoin d'aide pour choisir ? 🤔
+          Besoin d'aide pour choisir ?
         </h2>
         <p className="text-gray-500 text-sm mb-6">
-          Contactez-nous pour des conseils personnalisés sur nos produits 💜
+          Contactez-nous pour des conseils personnalisés sur nos produits
         </p>
 
         <Link to="/contact">

@@ -618,7 +618,7 @@ const ProductDetail = () => {
           {/* Comparatifs nutritionnels */}
           <Card className="p-8 mb-8">
             <h3 className="text-2xl font-bold text-foreground mb-6">
-              📊 Comparatifs Nutritionnels
+              Comparatifs Nutritionnels
             </h3>
             <p className="text-muted-foreground mb-6">
               Comparez les valeurs nutritionnelles du {product.name} avec les
@@ -654,7 +654,7 @@ const ProductDetail = () => {
           {/* Anecdotes */}
           <Card className="p-8 bg-primary/5">
             <h3 className="text-2xl font-bold text-foreground mb-6">
-              💡 Le Saviez-Vous ?
+              Le Saviez-Vous ?
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {product.anecdotes.map((anecdote, index) => (
@@ -781,7 +781,7 @@ const ProductDetail = () => {
         {/* CTA */}
         <div className="text-center mt-12 p-8 bg-muted rounded-3xl">
           <h3 className="text-2xl font-bold text-foreground mb-4">
-            Découvrez nos autres super-aliments 🌿
+            Découvrez nos autres super-aliments
           </h3>
           <Link to="/produits">
             <Button variant="outline" size="lg">

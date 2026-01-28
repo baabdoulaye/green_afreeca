@@ -98,8 +98,8 @@ const Home = () => {
             </h1>
             <p className="text-xl md:text-2xl text-foreground font-medium mb-8 drop-shadow-lg">
               Plus puissants et plus rentables que les compléments alimentaires
-              traditionnels. ✨ Le Jus de Bouille est 6x plus riche en Vitamine
-              C que l'orange ! 🍊
+              traditionnels. Le Jus de Bouille est 6x plus riche en Vitamine C
+              que l'orange !
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/produits">
@@ -138,7 +138,7 @@ const Home = () => {
                 <Leaf className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-foreground">
-                100% Naturel 🌱
+                100% Naturel
               </h3>
               <p className="text-muted-foreground">
                 Des produits bio sans additifs, cultivés selon des méthodes
@@ -155,7 +155,7 @@ const Home = () => {
                 <Award className="h-8 w-8 text-accent-foreground" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-foreground">
-                Qualité Premium 🏆
+                Qualité Premium
               </h3>
               <p className="text-muted-foreground">
                 Sélection rigoureuse et contrôle qualité pour garantir
@@ -172,7 +172,7 @@ const Home = () => {
                 <Heart className="h-8 w-8 text-secondary" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-foreground">
-                Bienfaits Prouvés ❤️
+                Bienfaits Prouvés
               </h3>
               <p className="text-muted-foreground">
                 Riches en vitamines, minéraux et antioxydants essentiels pour
@@ -189,7 +189,7 @@ const Home = () => {
                 <Sparkles className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-foreground">
-                Commerce Équitable 🤝
+                Commerce Équitable
               </h3>
               <p className="text-muted-foreground">
                 Soutien direct aux producteurs africains pour un impact social
@@ -204,7 +204,7 @@ const Home = () => {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-foreground">
-            Nos <span className="text-primary">Super-Aliments</span> 🥤
+            Nos <span className="text-primary">Super-Aliments</span>
           </h2>
           <p className="text-xl text-center text-muted-foreground mb-16 max-w-3xl mx-auto">
             Découvrez notre gamme de super-aliments africains bio, une
@@ -569,7 +569,7 @@ const Home = () => {
                 <div>
                   <div className="flex items-center gap-3 mb-6">
                     <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
-                      <span className="text-2xl">💰</span>
+                      <span className="text-2xl"></span>
                     </div>
                     <h3 className="text-2xl font-bold text-foreground">
                       Pourquoi C'est Plus Rentable
@@ -617,7 +617,7 @@ const Home = () => {
             </Card>
 
             <p className="text-xl font-bold text-center text-primary pt-8">
-              🌿 Supplémentez-vous intelligemment. Choisissez la puissance
+              Supplémentez-vous intelligemment. Choisissez la puissance
               naturelle des super-aliments africains.
             </p>
           </div>
@@ -628,11 +628,10 @@ const Home = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-foreground">
-            Ce Que Disent Nos <span className="text-primary">Clients</span> 💬
+            Ce Que Disent Nos <span className="text-primary">Clients</span>
           </h2>
           <p className="text-xl text-center text-muted-foreground mb-16 max-w-3xl mx-auto">
             Découvrez les témoignages de ceux qui ont adopté nos super-aliments
-            ⭐
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -673,7 +672,7 @@ const Home = () => {
       <section className="py-20 bg-muted">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-12 text-foreground">
-            Livraison Partout en <span className="text-accent">France</span> 🚚
+            Livraison Partout en <span className="text-accent">France</span>
           </h2>
 
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -721,11 +720,10 @@ const Home = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-foreground">
             Prêt à <span className="text-primary">Booster</span> Votre Santé ?
-            🚀
           </h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Commencez dès aujourd'hui avec nos super-aliments africains bio et
-            ressentez la différence ! 💪
+            ressentez la différence !
           </p>
           <Link to="/produits">
             <Button

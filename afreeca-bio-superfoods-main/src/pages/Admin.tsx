@@ -79,7 +79,7 @@ const Admin = () => {
         // MODE CREATION
         await productService.createProduct(productData);
         toast({
-          title: "Produit créé ! ✨",
+          title: "Produit créé ! ",
           description: `${productData.name} est en ligne.`,
         });
       }
