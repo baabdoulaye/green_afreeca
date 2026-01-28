@@ -18,7 +18,7 @@ app.use(
   cors({
     origin: "http://localhost:8080", // L'adresse de ton Front-end
     credentials: true, // Permet de s'échanger les cookies/tokens
-  })
+  }),
 );
 
 app.use(express.json());
@@ -28,7 +28,7 @@ app.use(cookieParser());
 
 // Connexion MongoDB
 const MONGO_URI =
-  process.env.MONGO_URI || "mongodb://localhost:27017/greenafricadb";
+  process.env.MONGO_URI || "mongodb://greenafreeca_mongodb:27017/greenafricadb";
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log("MongoDB connecté !"))

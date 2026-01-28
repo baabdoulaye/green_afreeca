@@ -56,28 +56,36 @@ const Admin = () => {
     }
   };
 
+  // 3. Modifie le handleSubmit pour gérer les deux cas
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Préparation des données pour le schéma Mongoose
     const productData = {
+      /* ... comme avant ... */
       name: newProduct.name,
-      slug: newProduct.slug.toLowerCase().trim(),
       price: parseFloat(newProduct.price.toString().replace(",", ".")),
+      slug: newProduct.slug,
       category: newProduct.category,
-      description:
-        newProduct.description ||
-        "Un super-aliment d'exception, riche en nutriments et préparé avec soin. 🌿",
-      stock: 50,
-      image_url: "/images/baobab-poudre.jpg", // Image par défaut
-      marketing_claim: "Naturellement puissant.",
-      is_bio: true,
     };
 
     try {
-      await productService.createProduct(productData);
+      if (editingProduct) {
+        // MODE EDITION
+        await productService.updateProduct(editingProduct._id, productData);
+        toast({
+          title: "Produit mis à jour ! 🔄",
+          description: `${productData.name} a été modifié.`,
+        });
+      } else {
+        // MODE CREATION
+        await productService.createProduct(productData);
+        toast({
+          title: "Produit créé ! ✨",
+          description: `${productData.name} est en ligne.`,
+        });
+      }
 
       setIsDialogOpen(false);
+      setEditingProduct(null); // Reset le mode edition
       setNewProduct({
         name: "",
         price: "",
@@ -86,19 +94,8 @@ const Admin = () => {
         description: "",
       });
       fetchData();
-
-      toast({
-        title: "Produit créé ! ✨",
-        description: `${productData.name} a bien été ajouté au catalogue.`,
-      });
-    } catch (error: any) {
-      console.error("Erreur création:", error);
-      toast({
-        variant: "destructive",
-        title: "Erreur lors de la création",
-        description:
-          error.response?.data?.error || "Vérifie les données envoyées.",
-      });
+    } catch (error) {
+      toast({ variant: "destructive", title: "Erreur ❌" });
     }
   };
 
@@ -121,6 +118,22 @@ const Admin = () => {
         });
       }
     }
+  };
+
+  // 1. Ajoute un état pour savoir quel produit on modifie
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+
+  // 2. Fonction pour ouvrir le modal en mode "Edition"
+  const openEditDialog = (product: any) => {
+    setEditingProduct(product);
+    setNewProduct({
+      name: product.name,
+      price: product.price.toString(),
+      category: product.category,
+      slug: product.slug,
+      description: product.description || "",
+    });
+    setIsDialogOpen(true);
   };
 
   return (
@@ -307,9 +320,7 @@ const Admin = () => {
                           variant="outline"
                           size="sm"
                           className="rounded-xl border-gray-200"
-                          onClick={() =>
-                            alert("Modification bientôt disponible !")
-                          }
+                          onClick={() => openEditDialog(p)} // On appelle la nouvelle fonction
                         >
                           <Edit className="h-4 w-4 mr-1" /> Modifier
                         </Button>

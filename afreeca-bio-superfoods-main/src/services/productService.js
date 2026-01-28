@@ -50,11 +50,23 @@ const deleteProduct = async (id) => {
   }
 };
 
+// 5. Mettre à jour un produit (PUT)
+const updateProduct = async (id, productData) => {
+  try {
+    const response = await axios.put(`${API_URL}/${id}`, productData);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Erreur lors de la modification :", error);
+    throw error;
+  }
+};
+
 // N'oublie pas de l'ajouter à l'export en bas
 const productService = {
   getProducts,
   getProductById,
   createProduct,
   deleteProduct,
+  updateProduct,
 };
 export default productService;

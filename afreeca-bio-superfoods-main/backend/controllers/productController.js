@@ -82,3 +82,22 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+// @desc    Modifier un produit
+// @route   PUT /api/products/:id
+exports.updateProduct = async (req, res) => {
+  console.log("On est dans le updateProduct du backend, enfoiré "); // <--- ICI
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, // Pour renvoyer le produit modifié et non l'ancien
+      runValidators: true,
+    });
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "Produit non trouvé" });
+    res.status(200).json({ success: true, data: product });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
