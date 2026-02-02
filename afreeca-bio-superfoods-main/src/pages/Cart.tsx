@@ -46,7 +46,7 @@ const Cart = () => {
       </div>
     );
   }
-
+  console.log("Contenu du panier :", items);
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="container mx-auto px-4">
@@ -72,9 +72,19 @@ const Cart = () => {
                     className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden"
                   >
                     <img
-                      src={item.image}
+                      src={
+                        item.image_url
+                          ? item.image_url.startsWith("/")
+                            ? item.image_url
+                            : `/images/${item.image_url}`
+                          : "/images/placeholder.svg" // Image de secours si image_url est vide
+                      }
                       alt={item.name}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform"
+                      className="w-20 h-20 object-cover rounded-lg"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/images/placeholder.svg"; //
+                      }}
                     />
                   </Link>
 

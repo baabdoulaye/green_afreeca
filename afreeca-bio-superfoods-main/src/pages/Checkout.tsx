@@ -185,7 +185,7 @@ const Checkout = () => {
                       className="flex gap-4 py-3 border-b border-border last:border-0"
                     >
                       <img
-                        src={item.image}
+                        src={item.image_url}
                         alt={item.name}
                         className="w-20 h-20 object-cover rounded-lg"
                       />

@@ -105,12 +105,21 @@ const Products = () => {
                 >
                   <div className="relative h-52 bg-gray-50">
                     <img
-                      src={`${URL_BACKEND}${p.image_url}`}
+                      // On force le dossier /images/ et on s'assure que p.image_url ne contient que le nom du fichier
+                      src={
+                        p.image_url.startsWith("/")
+                          ? p.image_url
+                          : `/images/${p.image_url}`
+                      }
                       alt={p.name}
                       className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                       onError={(e) => {
+                        console.log(
+                          "Erreur sur l'URL suivante :",
+                          (e.target as HTMLImageElement).src,
+                        );
                         (e.target as HTMLImageElement).src =
-                          "https://placehold.co/600x400?text=Produit+Green+Afreeca";
+                          "https://placehold.co/600x400?text=Erreur+Lien";
                       }}
                     />
                     <div className="absolute top-4 right-4 bg-[#22c55e] text-white text-[11px] font-bold px-3 py-1 rounded-full z-10 shadow-sm">
@@ -166,7 +175,7 @@ const Products = () => {
                           id: p._id,
                           name: p.name,
                           price: p.price,
-                          image: p.image_url,
+                          image_url: p.image_url,
                           dose: "Standard",
                           variant: p.slug,
                         })

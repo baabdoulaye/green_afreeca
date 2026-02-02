@@ -29,10 +29,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import ProductReviews from "@/components/ProductReviews";
-import baobabImg from "@/assets/product-baobab.jpg";
-import bissapImg from "@/assets/product-bissap.jpg";
-import moringaImg from "@/assets/product-moringa.jpg";
-import gingerImg from "@/assets/product-ginger.jpg";
+// import baobabImg from "@/assets/product-baobab.jpg";
+// import bissapImg from "@/assets/product-bissap.jpg";
+// import moringaImg from "@/assets/product-moringa.jpg";
+// import gingerImg from "@/assets/product-ginger.jpg";
 
 // Types
 interface ProductVariant {
@@ -78,7 +78,7 @@ const products: Record<string, Product> = {
       { id: "baobab-50cl", dose: "50 cl", price: 3.0 },
       { id: "baobab-1l", dose: "1 litre", price: 5.0 },
     ],
-    image: baobabImg,
+    image: "/images/baobab-poudre.jpg",
     description:
       "Jus de pulpe de baobab frais. 6 fois plus de vitamine C que l'orange et 2 fois plus de calcium que le lait.",
     detailedDescription:
@@ -158,7 +158,7 @@ const products: Record<string, Product> = {
       { id: "bissap-50cl", dose: "50 cl", price: 3.0 },
       { id: "bissap-1l", dose: "1 litre", price: 5.0 },
     ],
-    image: bissapImg,
+    image: "/images/bissap.jpg",
     description:
       "Jus d'hibiscus frais préparé selon la recette traditionnelle sénégalaise. Riche en antioxydants.",
     detailedDescription:
@@ -246,7 +246,7 @@ const products: Record<string, Product> = {
         price: 7.0,
       },
     ],
-    image: moringaImg,
+    image: "/images/moringa.jpg",
     description:
       "L'arbre miracle africain. Le seul végétal contenant les 9 acides aminés essentiels.",
     detailedDescription:
@@ -326,7 +326,7 @@ const products: Record<string, Product> = {
       { id: "ginger-50cl", dose: "50 cl", price: 4.0 },
       { id: "ginger-1l", dose: "1 litre", price: 7.0 },
     ],
-    image: gingerImg,
+    image: "/images/ginger-poudre.jpg",
     description:
       "Jus de gingembre frais bio. Excellent pour la digestion et l'immunité.",
     detailedDescription:

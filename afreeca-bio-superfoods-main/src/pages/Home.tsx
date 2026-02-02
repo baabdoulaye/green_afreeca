@@ -24,11 +24,11 @@ import {
   Clock,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import heroImage from "@/assets/hero-superfoods.jpg";
-import baobabImage from "@/assets/product-baobab.jpg";
-import bissapImage from "@/assets/product-bissap.jpg";
-import moringaImage from "@/assets/product-moringa.jpg";
-import gingerImage from "@/assets/product-ginger.jpg";
+// import heroImage from "@/assets/hero-superfoods.jpg";
+// import baobabImage from "@/assets/product-baobab.jpg";
+// import bissapImage from "@/assets/product-bissap.jpg";
+// import moringaImage from "@/assets/product-moringa.jpg";
+// import gingerImage from "@/assets/product-ginger.jpg";
 import ProductSlider from "@/components/ProductSlider";
 
 // Données des avis clients
@@ -79,7 +79,7 @@ const Home = () => {
         {/* Image de fond avec overlay */}
         <div className="absolute inset-0">
           <img
-            src={heroImage}
+            src="/images/hero-superfoods.jpg" // On remplace {heroImage} par le chemin direct
             alt="Super-aliments africains bio"
             className="w-full h-full object-cover"
           />
@@ -219,7 +219,7 @@ const Home = () => {
                 className="aspect-square overflow-hidden block cursor-pointer"
               >
                 <img
-                  src={baobabImage}
+                  src="/images/baobab-poudre.jpg"
                   alt="Jus de Bouille - Baobab"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -254,7 +254,7 @@ const Home = () => {
                 className="aspect-square overflow-hidden block cursor-pointer"
               >
                 <img
-                  src={bissapImage}
+                  src="/images/bissap.jpg"
                   alt="Jus de Bissap - Hibiscus"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -290,7 +290,7 @@ const Home = () => {
                 className="aspect-square overflow-hidden block cursor-pointer"
               >
                 <img
-                  src={moringaImage}
+                  src="/images/moringa.jpg"
                   alt="Moringa"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -323,7 +323,7 @@ const Home = () => {
                 className="aspect-square overflow-hidden block cursor-pointer"
               >
                 <img
-                  src={gingerImage}
+                  src="/images/ginger-poudre.jpg"
                   alt="Jus de Gingembre"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -414,7 +414,7 @@ const Home = () => {
               </div>
               <div className="rounded-3xl overflow-hidden shadow-2xl group">
                 <img
-                  src={moringaImage}
+                  src="/images/moringa.jpg"
                   alt="Moringa - Super-aliment riche en nutriments"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -425,7 +425,7 @@ const Home = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 items-stretch">
               <div className="rounded-3xl overflow-hidden shadow-2xl order-2 lg:order-1 group">
                 <img
-                  src={baobabImage}
+                  src="/images/baobab-poudre.jpg"
                   alt="Jus de Bouille - Source naturelle de vitamines"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -472,7 +472,7 @@ const Home = () => {
                   <div className="flex items-start gap-4">
                     <div className="h-14 w-14 rounded-xl overflow-hidden flex-shrink-0">
                       <img
-                        src={moringaImage}
+                        src="/images/moringa.jpg"
                         alt="Moringa"
                         className="w-full h-full object-cover"
                       />
@@ -495,7 +495,7 @@ const Home = () => {
                   <div className="flex items-start gap-4">
                     <div className="h-14 w-14 rounded-xl overflow-hidden flex-shrink-0">
                       <img
-                        src={baobabImage}
+                        src="/images/baobab-poudre.jpg"
                         alt="Baobab"
                         className="w-full h-full object-cover"
                       />
@@ -518,7 +518,7 @@ const Home = () => {
                   <div className="flex items-start gap-4">
                     <div className="h-14 w-14 rounded-xl overflow-hidden flex-shrink-0">
                       <img
-                        src={bissapImage}
+                        src="/images/bissap.jpg"
                         alt="Bissap"
                         className="w-full h-full object-cover"
                       />
@@ -541,7 +541,7 @@ const Home = () => {
                   <div className="flex items-start gap-4">
                     <div className="h-14 w-14 rounded-xl overflow-hidden flex-shrink-0">
                       <img
-                        src={gingerImage}
+                        src="/images/ginger-poudre.jpg"
                         alt="Gingembre"
                         className="w-full h-full object-cover"
                       />
@@ -608,7 +608,7 @@ const Home = () => {
                 </div>
                 <div className="rounded-3xl overflow-hidden shadow-2xl group">
                   <img
-                    src={gingerImage}
+                    src="/images/ginger-poudre.jpg"
                     alt="Gingembre - Anti-inflammatoire naturel"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

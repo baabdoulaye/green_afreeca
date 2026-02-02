@@ -6,7 +6,7 @@
 
 import { Leaf, Heart, Users, Award } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import heroImg from "@/assets/hero-superfoods.jpg";
+// import heroImg from "@/assets/hero-superfoods.jpg";
 
 const About = () => {
   const values = [
@@ -39,7 +39,7 @@ const About = () => {
       {/* Hero Section */}
       <section className="relative h-[400px] overflow-hidden">
         <img
-          src={heroImg}
+          src="/images/hero-superfoods.jpg"
           alt="Super-aliments africains"
           className="w-full h-full object-cover"
         />
@@ -179,7 +179,7 @@ const About = () => {
             l'Afrique
           </p>
           <a href="/produits">
-            <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8">
+            <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8">
               Voir nos produits
             </button>
           </a>

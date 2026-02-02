@@ -3,7 +3,13 @@
  * Support des variantes de produits (formats/tailles)
  */
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { toast } from "sonner";
 
 export interface CartItem {
@@ -11,7 +17,7 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
-  image: string;
+  image_url: string;
   dose: string;
   variant?: string; // Format ou variante du produit
 }
@@ -29,22 +35,30 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  // 1. On initialise l'état avec ce qu'il y a déjà dans le localStorage
+  const [items, setItems] = useState<CartItem[]>(() => {
+    const savedCart = localStorage.getItem("greenafreeca_cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
-  // Génère une clé unique pour chaque article (id + variant)
-  const getItemKey = (id: string, variant?: string) => `${id}-${variant || "default"}`;
+  // 2. On sauvegarde automatiquement dans le localStorage dès que 'items' change
+  useEffect(() => {
+    localStorage.setItem("greenafreeca_cart", JSON.stringify(items));
+  }, [items]);
 
-  const addToCart = (item: Omit<CartItem, "quantity"> & { quantity?: number }) => {
+  const addToCart = (
+    item: Omit<CartItem, "quantity"> & { quantity?: number },
+  ) => {
     setItems((prev) => {
       const existingItem = prev.find(
-        (i) => i.id === item.id && i.variant === item.variant
+        (i) => i.id === item.id && i.variant === item.variant,
       );
       if (existingItem) {
         toast.success(`Quantité mise à jour pour ${item.name}`);
         return prev.map((i) =>
           i.id === item.id && i.variant === item.variant
             ? { ...i, quantity: i.quantity + (item.quantity || 1) }
-            : i
+            : i,
         );
       }
       toast.success(`${item.name} ajouté au panier !`);
@@ -53,9 +67,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (id: string, variant?: string) => {
-    setItems((prev) => prev.filter(
-      (item) => !(item.id === id && item.variant === variant)
-    ));
+    setItems((prev) =>
+      prev.filter((item) => !(item.id === id && item.variant === variant)),
+    );
     toast.info("Produit retiré du panier");
   };
 
@@ -65,11 +79,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     setItems((prev) =>
-      prev.map((item) => 
-        item.id === id && item.variant === variant 
-          ? { ...item, quantity } 
-          : item
-      )
+      prev.map((item) =>
+        item.id === id && item.variant === variant
+          ? { ...item, quantity }
+          : item,
+      ),
     );
   };
 
@@ -81,7 +95,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0
+    0,
   );
 
   return (
