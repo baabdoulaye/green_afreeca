@@ -1,13 +1,13 @@
 /**
  * Page Authentification - Inscription et Connexion
- * 
- * Formulaires pour créer un compte ou se connecter
+ * * Formulaires pour créer un compte ou se connecter
  * Fonctionnalité de mot de passe oublié incluse
+ * Intégration Backend Réelle & Gestion d'état global
  */
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Mail, Lock, User, Phone, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,12 +22,20 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+const API_URL = "http://localhost:3000/api/auth";
+
 const Auth = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetSent, setResetSent] = useState(false);
+
+  // États pour la visibilité des mots de passe
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Formulaire d'inscription
   const [signupData, setSignupData] = useState({
@@ -36,25 +44,24 @@ const Auth = () => {
     email: "",
     phone: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
   // Formulaire de connexion
   const [loginData, setLoginData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
-  // Gérer l'inscription
+  // Gérer l'inscription Réelle
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validation
+
     if (signupData.password !== signupData.confirmPassword) {
       toast({
         title: "Erreur",
         description: "Les mots de passe ne correspondent pas",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -63,60 +70,121 @@ const Auth = () => {
       toast({
         title: "Erreur",
         description: "Le mot de passe doit contenir au moins 6 caractères",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
-    
-    // Simulation - À connecter avec le backend
-    setTimeout(() => {
+
+    try {
+      const response = await fetch(`${API_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: signupData.firstName,
+          lastName: signupData.lastName,
+          email: signupData.email,
+          phone: signupData.phone,
+          password: signupData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok)
+        throw new Error(data.error || "Erreur lors de l'inscription");
+
       toast({
         title: "Compte créé !",
-        description: "Bienvenue chez Green Afreeca"
+        description:
+          "Bienvenue chez Green Afreeca. Vous pouvez maintenant vous connecter.",
       });
+
+      // Bascule automatique vers l'onglet connexion
+      const loginTab = document.querySelector(
+        '[data-value="login"]',
+      ) as HTMLElement;
+      if (loginTab) loginTab.click();
+    } catch (error: any) {
+      toast({
+        title: "Erreur d'inscription",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
-  // Gérer la connexion
+  // Gérer la connexion Réelle
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Simulation - À connecter avec le backend
-    setTimeout(() => {
-      toast({
-        title: "Connexion réussie !",
-        description: "Bon retour parmi nous"
+
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || "Identifiants invalides");
+
+      // MAPPING ROBUSTE : On vérifie toutes les sources possibles du prénom
+      const userToSave = {
+        firstName: data.user?.firstName || data.firstName || "Utilisateur",
+        lastName: data.user?.lastName || data.lastName || "",
+        email: data.user?.email || data.email || loginData.email,
+      };
+
+      // ÉTAPE 3 : Stockage propre des infos pour la Navbar
+      localStorage.setItem("userInfo", JSON.stringify(userToSave));
+
+      // On déclenche l'événement personnalisé pour prévenir la Navbar immédiatement
+      window.dispatchEvent(new Event("userLogin"));
+
+      toast({
+        title: "Connexion réussie",
+        description: `Ravi de vous revoir, ${userToSave.firstName} !`,
+      });
+
+      // Redirection vers l'accueil
+      navigate("/");
+
+      // Optionnel : reload uniquement si l'event userLogin n'est pas capté par ta Navbar
+      // window.location.reload();
+    } catch (error: any) {
+      toast({
+        title: "Erreur de connexion",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
-  // Gérer la réinitialisation du mot de passe
+  // Gérer la réinitialisation (Simulation)
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!resetEmail) {
       toast({
         title: "Erreur",
         description: "Veuillez entrer votre adresse email",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
-
     setIsLoading(true);
-    
-    // Simulation - À connecter avec le backend
     setTimeout(() => {
       setResetSent(true);
       setIsLoading(false);
       toast({
         title: "Email envoyé !",
-        description: "Vérifiez votre boîte de réception"
+        description: "Vérifiez votre boîte de réception",
       });
     }, 1500);
   };
@@ -140,7 +208,10 @@ const Auth = () => {
             </p>
           </div>
 
-          <Card className="p-6 animate-fade-in-up" style={{ animationDelay: "100ms" }}>
+          <Card
+            className="p-6 animate-fade-in-up"
+            style={{ animationDelay: "100ms" }}
+          >
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">Connexion</TabsTrigger>
@@ -160,7 +231,9 @@ const Auth = () => {
                         placeholder="votre@email.com"
                         className="pl-10"
                         value={loginData.email}
-                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                        onChange={(e) =>
+                          setLoginData({ ...loginData, email: e.target.value })
+                        }
                         required
                       />
                     </div>
@@ -172,19 +245,35 @@ const Auth = () => {
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="login-password"
-                        type="password"
+                        type={showLoginPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="pl-10"
+                        className="pl-10 pr-10"
                         value={loginData.password}
-                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                        onChange={(e) =>
+                          setLoginData({
+                            ...loginData,
+                            password: e.target.value,
+                          })
+                        }
                         required
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                        className="absolute right-3 top-3 text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {showLoginPassword ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
+                      </button>
                     </div>
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    size="lg" 
+                  <Button
+                    type="submit"
+                    size="lg"
                     className="w-full"
                     disabled={isLoading}
                   >
@@ -217,7 +306,12 @@ const Auth = () => {
                           placeholder="Prénom"
                           className="pl-10"
                           value={signupData.firstName}
-                          onChange={(e) => setSignupData({ ...signupData, firstName: e.target.value })}
+                          onChange={(e) =>
+                            setSignupData({
+                              ...signupData,
+                              firstName: e.target.value,
+                            })
+                          }
                           required
                         />
                       </div>
@@ -230,7 +324,12 @@ const Auth = () => {
                         type="text"
                         placeholder="Nom"
                         value={signupData.lastName}
-                        onChange={(e) => setSignupData({ ...signupData, lastName: e.target.value })}
+                        onChange={(e) =>
+                          setSignupData({
+                            ...signupData,
+                            lastName: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -246,7 +345,12 @@ const Auth = () => {
                         placeholder="votre@email.com"
                         className="pl-10"
                         value={signupData.email}
-                        onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                        onChange={(e) =>
+                          setSignupData({
+                            ...signupData,
+                            email: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -262,7 +366,12 @@ const Auth = () => {
                         placeholder="+33 6 12 34 56 78"
                         className="pl-10"
                         value={signupData.phone}
-                        onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
+                        onChange={(e) =>
+                          setSignupData({
+                            ...signupData,
+                            phone: e.target.value,
+                          })
+                        }
                         required
                       />
                     </div>
@@ -274,35 +383,73 @@ const Auth = () => {
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="signup-password"
-                        type="password"
+                        type={showSignupPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="pl-10"
+                        className="pl-10 pr-10"
                         value={signupData.password}
-                        onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                        onChange={(e) =>
+                          setSignupData({
+                            ...signupData,
+                            password: e.target.value,
+                          })
+                        }
                         required
                       />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowSignupPassword(!showSignupPassword)
+                        }
+                        className="absolute right-3 top-3 text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {showSignupPassword ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
+                      </button>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirmer le mot de passe</Label>
+                    <Label htmlFor="confirm-password">
+                      Confirmer le mot de passe
+                    </Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                       <Input
                         id="confirm-password"
-                        type="password"
+                        type={showConfirmPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="pl-10"
+                        className="pl-10 pr-10"
                         value={signupData.confirmPassword}
-                        onChange={(e) => setSignupData({ ...signupData, confirmPassword: e.target.value })}
+                        onChange={(e) =>
+                          setSignupData({
+                            ...signupData,
+                            confirmPassword: e.target.value,
+                          })
+                        }
                         required
                       />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        className="absolute right-3 top-3 text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff size={16} />
+                        ) : (
+                          <Eye size={16} />
+                        )}
+                      </button>
                     </div>
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    size="lg" 
+                  <Button
+                    type="submit"
+                    size="lg"
                     className="w-full"
                     disabled={isLoading}
                   >
@@ -328,13 +475,12 @@ const Auth = () => {
           <DialogHeader>
             <DialogTitle>Mot de passe oublié</DialogTitle>
             <DialogDescription>
-              {resetSent 
+              {resetSent
                 ? "Un email de réinitialisation a été envoyé à votre adresse."
-                : "Entrez votre adresse email pour recevoir un lien de réinitialisation."
-              }
+                : "Entrez votre adresse email pour recevoir un lien de réinitialisation."}
             </DialogDescription>
           </DialogHeader>
-          
+
           {!resetSent ? (
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div className="space-y-2">
@@ -353,19 +499,15 @@ const Auth = () => {
                 </div>
               </div>
               <div className="flex gap-3">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={closeForgotPassword}
                   className="flex-1"
                 >
                   Annuler
                 </Button>
-                <Button 
-                  type="submit" 
-                  className="flex-1"
-                  disabled={isLoading}
-                >
+                <Button type="submit" className="flex-1" disabled={isLoading}>
                   {isLoading ? "Envoi..." : "Envoyer"}
                 </Button>
               </div>
@@ -375,13 +517,11 @@ const Auth = () => {
               <div className="bg-primary/10 p-4 rounded-lg text-center">
                 <Mail className="h-12 w-12 text-primary mx-auto mb-3" />
                 <p className="text-sm text-muted-foreground">
-                  Vérifiez votre boîte de réception et suivez les instructions pour réinitialiser votre mot de passe.
+                  Vérifiez votre boîte de réception et suivez les instructions
+                  pour réinitialiser votre mot de passe.
                 </p>
               </div>
-              <Button 
-                onClick={closeForgotPassword}
-                className="w-full"
-              >
+              <Button onClick={closeForgotPassword} className="w-full">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour à la connexion
               </Button>
