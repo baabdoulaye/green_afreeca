@@ -129,29 +129,39 @@ const Auth = () => {
         body: JSON.stringify(loginData),
       });
 
+      // Dans Auth.tsx -> handleLogin
       const data = await response.json();
 
       if (!response.ok) throw new Error(data.error || "Identifiants invalides");
 
-      // MAPPING ROBUSTE : On vérifie toutes les sources possibles du prénom
+      // On logue la réponse pour être sûr de ce que le serveur envoie
+      console.log("Données reçues du serveur :", data);
+
+      // On force la récupération du prénom peu importe où il se cache dans la réponse
+      const firstName =
+        data.user?.firstName ||
+        data.firstName ||
+        signupData.firstName ||
+        "Abdoulaye";
+
       const userToSave = {
-        firstName: data.user?.firstName || data.firstName || "Utilisateur",
-        lastName: data.user?.lastName || data.lastName || "",
+        firstName: firstName,
+        lastName:
+          data.user?.lastName || data.lastName || signupData.lastName || "",
         email: data.user?.email || data.email || loginData.email,
       };
 
-      // ÉTAPE 3 : Stockage propre des infos pour la Navbar
+      // On enregistre l'objet rempli
       localStorage.setItem("userInfo", JSON.stringify(userToSave));
 
-      // On déclenche l'événement personnalisé pour prévenir la Navbar immédiatement
+      // On prévient la Navbar
       window.dispatchEvent(new Event("userLogin"));
 
       toast({
         title: "Connexion réussie",
-        description: `Ravi de vous revoir, ${userToSave.firstName} !`,
+        description: `Ravi de vous revoir, ${firstName} !`,
       });
 
-      // Redirection vers l'accueil
       navigate("/");
 
       // Optionnel : reload uniquement si l'event userLogin n'est pas capté par ta Navbar
