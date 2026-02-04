@@ -44,8 +44,8 @@ const Navbar = () => {
     localStorage.removeItem("userInfo");
     setUser(null);
     toast({
-      title: "Déconnexion réussie",
-      description: "À bientôt sur Green Afreeca !",
+      title: "Vous etes deconnecté",
+      description: "",
     });
     navigate("/");
   };

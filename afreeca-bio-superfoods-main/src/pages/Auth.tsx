@@ -98,7 +98,7 @@ const Auth = () => {
       toast({
         title: "Compte créé !",
         description:
-          "Bienvenue chez Green Afreeca. Vous pouvez maintenant vous connecter.",
+          "Bienvenue chez Green Afreeca. Connectez-vous pour continuer.",
       });
 
       // Bascule automatique vers l'onglet connexion
@@ -129,43 +129,43 @@ const Auth = () => {
         body: JSON.stringify(loginData),
       });
 
-      // Dans Auth.tsx -> handleLogin
       const data = await response.json();
 
       if (!response.ok) throw new Error(data.error || "Identifiants invalides");
 
-      // On logue la réponse pour être sûr de ce que le serveur envoie
+      // DEBUG : On regarde ce que le serveur nous crache au visage
       console.log("Données reçues du serveur :", data);
 
-      // On force la récupération du prénom peu importe où il se cache dans la réponse
-      const firstName =
-        data.user?.firstName ||
-        data.firstName ||
-        signupData.firstName ||
-        "Abdoulaye";
+      // --- ÉTAPE CRUCIALE : LE TOKEN ---
+      // On stocke le badge d'accès pour que le Checkout puisse payer
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      // --- ÉTAPE ROBUSTE : LES INFOS ---
+      // On récupère le prénom peu importe où il se cache dans l'objet
+      const firstName = data.user?.firstName || data.firstName || "Abdoulaye";
 
       const userToSave = {
         firstName: firstName,
-        lastName:
-          data.user?.lastName || data.lastName || signupData.lastName || "",
+        lastName: data.user?.lastName || data.lastName || "",
         email: data.user?.email || data.email || loginData.email,
+        phone: data.user?.phone || data.phone || "",
       };
 
-      // On enregistre l'objet rempli
+      // On enregistre l'objet utilisateur pour la Navbar
       localStorage.setItem("userInfo", JSON.stringify(userToSave));
 
-      // On prévient la Navbar
+      // On déclenche l'événement pour réveiller la Navbar sans refresh
       window.dispatchEvent(new Event("userLogin"));
 
       toast({
-        title: "Connexion réussie",
+        title: "Vous etes connecté",
         description: `Ravi de vous revoir, ${firstName} !`,
       });
 
+      // Redirection vers l'accueil pour fêter ça
       navigate("/");
-
-      // Optionnel : reload uniquement si l'event userLogin n'est pas capté par ta Navbar
-      // window.location.reload();
     } catch (error: any) {
       toast({
         title: "Erreur de connexion",
@@ -486,8 +486,8 @@ const Auth = () => {
             <DialogTitle>Mot de passe oublié</DialogTitle>
             <DialogDescription>
               {resetSent
-                ? "Un email de réinitialisation a été envoyé à votre adresse."
-                : "Entrez votre adresse email pour recevoir un lien de réinitialisation."}
+                ? "Un email a été envoyé."
+                : "Entrez votre email pour recevoir un lien."}
             </DialogDescription>
           </DialogHeader>
 
@@ -523,17 +523,13 @@ const Auth = () => {
               </div>
             </form>
           ) : (
-            <div className="space-y-4">
-              <div className="bg-primary/10 p-4 rounded-lg text-center">
-                <Mail className="h-12 w-12 text-primary mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  Vérifiez votre boîte de réception et suivez les instructions
-                  pour réinitialiser votre mot de passe.
-                </p>
-              </div>
+            <div className="space-y-4 text-center">
+              <Mail className="h-12 w-12 text-primary mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">
+                Vérifiez votre boîte de réception.
+              </p>
               <Button onClick={closeForgotPassword} className="w-full">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Retour à la connexion
+                <ArrowLeft className="h-4 w-4 mr-2" /> Retour
               </Button>
             </div>
           )}

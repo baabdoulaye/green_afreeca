@@ -1,6 +1,7 @@
 /**
  * Page Compte - Espace personnel utilisateur
  * Sidebar fonctionnelle liée aux onglets
+ * Intégration réelle avec l'API des commandes et statuts dynamiques
  */
 
 import { useState, useEffect } from "react";
@@ -14,6 +15,7 @@ import {
   Clock,
   CheckCircle,
   Truck,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,7 +25,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils"; // Utilitaire pour les classes conditionnelles
+import { cn } from "@/lib/utils";
 
 const statusIcons = {
   pending: Clock,
@@ -39,20 +41,6 @@ const statusColors = {
   delivered: "bg-green-100 text-green-800",
 };
 
-const mockOrders = [
-  {
-    id: "GA-12345678",
-    date: "28 novembre 2024",
-    status: "delivered",
-    statusLabel: "Livré",
-    total: 24.99,
-    items: [
-      { name: "Jus de Bissap", quantity: 2, price: 5.0 },
-      { name: "Moringa Feuilles", quantity: 1, price: 7.0 },
-    ],
-  },
-];
-
 const Account = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -64,9 +52,12 @@ const Account = () => {
     email: "",
     phone: "",
   });
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile"); // État pour piloter les onglets
+  const [activeTab, setActiveTab] = useState("profile");
 
+  // 1. Chargement des infos utilisateur
   useEffect(() => {
     const savedUser = localStorage.getItem("userInfo");
     if (savedUser) {
@@ -76,9 +67,50 @@ const Account = () => {
     }
   }, [navigate]);
 
+  // 2. RÉCUPÉRATION RÉELLE DES COMMANDES 🚀
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const token = localStorage.getItem("token");
+      if (!token || activeTab !== "orders") return;
+
+      setIsLoadingOrders(true);
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/orders/myorders",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (!response.ok)
+          throw new Error("Impossible de charger les commandes");
+
+        const data = await response.json();
+        setOrders(data);
+      } catch (error: any) {
+        console.error("Erreur historique:", error);
+        toast({
+          title: "Erreur ❌",
+          description: "Impossible de récupérer ton historique.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingOrders(false);
+      }
+    };
+
+    fetchOrders();
+  }, [activeTab, toast]);
+
   const handleLogout = () => {
     localStorage.removeItem("userInfo");
-    toast({ title: "Déconnexion réussie", description: "À bientôt !" });
+    localStorage.removeItem("token");
+    toast({
+      title: "Vous êtes déconnecté",
+      description: "À bientôt chez Green Afreeca !",
+    });
     navigate("/");
     window.location.reload();
   };
@@ -106,7 +138,7 @@ const Account = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar avec Boutons Fonctionnels */}
+          {/* Sidebar */}
           <div className="lg:col-span-1">
             <Card className="p-6">
               <div className="text-center mb-6">
@@ -124,10 +156,9 @@ const Account = () => {
                   variant="ghost"
                   onClick={() => setActiveTab("profile")}
                   className={cn(
-                    "w-full justify-start gap-2 transition-all",
-                    activeTab === "profile"
-                      ? "bg-primary/10 text-primary font-bold shadow-sm"
-                      : "text-muted-foreground",
+                    "w-full justify-start gap-2",
+                    activeTab === "profile" &&
+                      "bg-primary/10 text-primary font-bold",
                   )}
                 >
                   <User className="h-4 w-4" /> Mon profil
@@ -136,10 +167,9 @@ const Account = () => {
                   variant="ghost"
                   onClick={() => setActiveTab("orders")}
                   className={cn(
-                    "w-full justify-start gap-2 transition-all",
-                    activeTab === "orders"
-                      ? "bg-primary/10 text-primary font-bold shadow-sm"
-                      : "text-muted-foreground",
+                    "w-full justify-start gap-2",
+                    activeTab === "orders" &&
+                      "bg-primary/10 text-primary font-bold",
                   )}
                 >
                   <Package className="h-4 w-4" /> Mes commandes
@@ -149,14 +179,14 @@ const Account = () => {
               <Button
                 onClick={handleLogout}
                 variant="outline"
-                className="w-full justify-start gap-2 text-destructive hover:bg-red-50"
+                className="w-full justify-start gap-2 text-destructive"
               >
                 <LogOut className="h-4 w-4" /> Se déconnecter
               </Button>
             </Card>
           </div>
 
-          {/* Contenu principal piloté par activeTab */}
+          {/* Contenu principal */}
           <div className="lg:col-span-3">
             <Tabs
               value={activeTab}
@@ -219,36 +249,6 @@ const Account = () => {
                         </p>
                       )}
                     </div>
-                    <div className="space-y-2">
-                      <Label>Email</Label>
-                      {isEditing ? (
-                        <Input
-                          value={user.email}
-                          onChange={(e) =>
-                            setUser({ ...user, email: e.target.value })
-                          }
-                        />
-                      ) : (
-                        <p className="p-2 bg-gray-50 rounded-md border">
-                          {user.email}
-                        </p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Téléphone</Label>
-                      {isEditing ? (
-                        <Input
-                          value={user.phone}
-                          onChange={(e) =>
-                            setUser({ ...user, phone: e.target.value })
-                          }
-                        />
-                      ) : (
-                        <p className="p-2 bg-gray-50 rounded-md border">
-                          {user.phone || "Non renseigné"}
-                        </p>
-                      )}
-                    </div>
                   </div>
                   {isEditing && (
                     <div className="mt-6 flex justify-end">
@@ -268,43 +268,111 @@ const Account = () => {
                   <h3 className="text-xl font-bold text-foreground mb-6">
                     Historique des commandes 📦
                   </h3>
-                  {mockOrders.map((order) => {
-                    const StatusIcon =
-                      statusIcons[order.status as keyof typeof statusIcons];
-                    return (
-                      <div
-                        key={order.id}
-                        className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
-                      >
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <p className="font-bold">Commande {order.id}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {order.date}
-                            </p>
-                          </div>
-                          <Badge
-                            className={
-                              statusColors[
-                                order.status as keyof typeof statusColors
-                              ]
-                            }
+
+                  {isLoadingOrders ? (
+                    <p className="text-center py-8">
+                      Chargement des commandes...
+                    </p>
+                  ) : orders.length === 0 ? (
+                    <div className="text-center py-12 border-2 border-dashed rounded-xl">
+                      <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">
+                        Aucune commande trouvée. C'est le moment de craquer !
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {orders.map((order) => {
+                        // --- LOGIQUE DE CALCUL DU STATUT RÉEL ---
+                        let statusKey: keyof typeof statusIcons = "pending";
+                        let statusLabel = "En attente";
+
+                        if (order.isDelivered) {
+                          statusKey = "delivered";
+                          statusLabel = "Livré";
+                        } else if (order.isPaid) {
+                          statusKey = "processing";
+                          statusLabel = "En préparation";
+                        } else if (order.status === "shipped") {
+                          statusKey = "shipped";
+                          statusLabel = "En cours de livraison";
+                        }
+
+                        const StatusIcon = statusIcons[statusKey] || Clock;
+
+                        return (
+                          <div
+                            key={order._id}
+                            className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
                           >
-                            <StatusIcon className="h-3 w-3 mr-1" />
-                            {order.statusLabel}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between pt-3 border-t border-border">
-                          <p className="font-bold text-primary">
-                            {order.total.toFixed(2)}€
-                          </p>
-                          <Button variant="ghost" size="sm">
-                            Détails <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                            <div className="flex items-center justify-between mb-3">
+                              <div>
+                                <p className="font-bold uppercase text-xs text-muted-foreground">
+                                  ID: {order._id.slice(-8)}
+                                </p>
+                                <p className="text-sm font-medium">
+                                  {new Date(order.createdAt).toLocaleDateString(
+                                    "fr-FR",
+                                    {
+                                      day: "numeric",
+                                      month: "long",
+                                      year: "numeric",
+                                    },
+                                  )}
+                                </p>
+                              </div>
+                              <Badge
+                                className={cn(
+                                  "flex items-center gap-1",
+                                  statusColors[statusKey],
+                                )}
+                              >
+                                <StatusIcon className="h-3 w-3" />
+                                {statusLabel}
+                              </Badge>
+                            </div>
+
+                            <div className="space-y-2 mb-4">
+                              {order.orderItems.map(
+                                (item: any, idx: number) => (
+                                  <div
+                                    key={idx}
+                                    className="text-sm flex justify-between"
+                                  >
+                                    <span>
+                                      {item.quantity}x {item.name}
+                                    </span>
+                                    <span className="text-muted-foreground">
+                                      {item.price.toFixed(2)}€
+                                    </span>
+                                  </div>
+                                ),
+                              )}
+                            </div>
+
+                            <div className="flex items-center justify-between pt-3 border-t border-border">
+                              <p className="font-bold text-primary text-lg">
+                                Total : {order.totalPrice.toFixed(2)}€
+                              </p>
+                              <div className="flex gap-2">
+                                <Badge
+                                  variant="outline"
+                                  className="text-[10px] uppercase font-light"
+                                >
+                                  {order.paymentMethod || "Stripe"}
+                                </Badge>
+                                {order.isPaid && (
+                                  <Badge className="bg-green-50 text-green-700 border-green-200 text-[10px]">
+                                    PAYÉ ✅
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </Card>
               </TabsContent>
             </Tabs>
