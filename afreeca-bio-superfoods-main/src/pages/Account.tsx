@@ -16,6 +16,9 @@ import {
   CheckCircle,
   Truck,
   AlertCircle,
+  MapPin,
+  Phone,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -45,13 +48,18 @@ const Account = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // États
+  // États - On blinde l'objet user avec tous les champs nécessaires
   const [user, setUser] = useState({
-    firstName: "Utilisateur",
+    firstName: "",
     lastName: "",
     email: "",
     phone: "",
+    address: "",
+    city: "",
+    zipCode: "",
+    country: "Sénégal",
   });
+
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -61,7 +69,9 @@ const Account = () => {
   useEffect(() => {
     const savedUser = localStorage.getItem("userInfo");
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      // On fusionne avec l'état initial pour éviter les champs undefined
+      setUser((prev) => ({ ...prev, ...parsedUser }));
     } else {
       navigate("/auth");
     }
@@ -120,7 +130,7 @@ const Account = () => {
     window.dispatchEvent(new Event("userLogin"));
     toast({
       title: "Profil mis à jour ! ✅",
-      description: "Informations enregistrées.",
+      description: "Toutes tes informations ont été enregistrées.",
     });
     setIsEditing(false);
   };
@@ -145,10 +155,12 @@ const Account = () => {
                 <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <User className="h-10 w-10 text-primary" />
                 </div>
-                <h2 className="font-bold text-foreground">
+                <h2 className="font-bold text-lg text-foreground">
                   {user.firstName} {user.lastName}
                 </h2>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
+                <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
+                  <Mail className="h-3 w-3" /> {user.email}
+                </p>
               </div>
               <Separator className="my-4" />
               <nav className="space-y-2">
@@ -179,7 +191,7 @@ const Account = () => {
               <Button
                 onClick={handleLogout}
                 variant="outline"
-                className="w-full justify-start gap-2 text-destructive"
+                className="w-full justify-start gap-2 text-destructive hover:bg-red-50"
               >
                 <LogOut className="h-4 w-4" /> Se déconnecter
               </Button>
@@ -213,50 +225,176 @@ const Account = () => {
                         "Annuler"
                       ) : (
                         <>
-                          <Edit className="h-4 w-4 mr-2" /> Modifier
+                          <Edit className="h-4 w-4 mr-2" /> Modifier le profil
                         </>
                       )}
                     </Button>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label>Prénom</Label>
-                      {isEditing ? (
-                        <Input
-                          value={user.firstName}
-                          onChange={(e) =>
-                            setUser({ ...user, firstName: e.target.value })
-                          }
-                        />
-                      ) : (
-                        <p className="p-2 bg-gray-50 rounded-md border">
-                          {user.firstName}
-                        </p>
-                      )}
+
+                  <div className="space-y-8">
+                    {/* Section Identité */}
+                    <div>
+                      <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                        Identité
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label>Prénom</Label>
+                          {isEditing ? (
+                            <Input
+                              value={user.firstName}
+                              onChange={(e) =>
+                                setUser({ ...user, firstName: e.target.value })
+                              }
+                            />
+                          ) : (
+                            <p className="p-2.5 bg-gray-50 rounded-md border text-foreground">
+                              {user.firstName}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Nom</Label>
+                          {isEditing ? (
+                            <Input
+                              value={user.lastName}
+                              onChange={(e) =>
+                                setUser({ ...user, lastName: e.target.value })
+                              }
+                            />
+                          ) : (
+                            <p className="p-2.5 bg-gray-50 rounded-md border text-foreground">
+                              {user.lastName || (
+                                <span className="text-muted-foreground italic text-sm">
+                                  Non renseigné
+                                </span>
+                              )}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Email</Label>
+                          <p className="p-2.5 bg-muted rounded-md border text-muted-foreground flex items-center gap-2">
+                            <Mail className="h-4 w-4" /> {user.email}
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Téléphone</Label>
+                          {isEditing ? (
+                            <Input
+                              placeholder="+221 ..."
+                              value={user.phone}
+                              onChange={(e) =>
+                                setUser({ ...user, phone: e.target.value })
+                              }
+                            />
+                          ) : (
+                            <p className="p-2.5 bg-gray-50 rounded-md border text-foreground flex items-center gap-2">
+                              <Phone className="h-4 w-4 text-primary" />{" "}
+                              {user.phone || (
+                                <span className="text-muted-foreground italic text-sm">
+                                  Non renseigné
+                                </span>
+                              )}
+                            </p>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label>Nom</Label>
-                      {isEditing ? (
-                        <Input
-                          value={user.lastName}
-                          onChange={(e) =>
-                            setUser({ ...user, lastName: e.target.value })
-                          }
-                        />
-                      ) : (
-                        <p className="p-2 bg-gray-50 rounded-md border">
-                          {user.lastName || "Non renseigné"}
-                        </p>
-                      )}
+
+                    <Separator />
+
+                    {/* Section Adresse de livraison par défaut */}
+                    <div>
+                      <h4 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+                        Adresse de livraison par défaut
+                      </h4>
+                      <div className="grid grid-cols-1 gap-6">
+                        <div className="space-y-2">
+                          <Label>Adresse (Rue, appartement...)</Label>
+                          {isEditing ? (
+                            <Input
+                              placeholder="123 Rue de la Teranga"
+                              value={user.address}
+                              onChange={(e) =>
+                                setUser({ ...user, address: e.target.value })
+                              }
+                            />
+                          ) : (
+                            <p className="p-2.5 bg-gray-50 rounded-md border text-foreground flex items-center gap-2">
+                              <MapPin className="h-4 w-4 text-primary" />{" "}
+                              {user.address || (
+                                <span className="text-muted-foreground italic text-sm">
+                                  Aucune adresse enregistrée
+                                </span>
+                              )}
+                            </p>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label>Ville</Label>
+                            {isEditing ? (
+                              <Input
+                                value={user.city}
+                                onChange={(e) =>
+                                  setUser({ ...user, city: e.target.value })
+                                }
+                              />
+                            ) : (
+                              <p className="p-2.5 bg-gray-50 rounded-md border text-foreground">
+                                {user.city || "-"}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Code Postal</Label>
+                            {isEditing ? (
+                              <Input
+                                value={user.zipCode}
+                                onChange={(e) =>
+                                  setUser({ ...user, zipCode: e.target.value })
+                                }
+                              />
+                            ) : (
+                              <p className="p-2.5 bg-gray-50 rounded-md border text-foreground">
+                                {user.zipCode || "-"}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2 col-span-2 md:col-span-1">
+                            <Label>Pays</Label>
+                            {isEditing ? (
+                              <Input
+                                value={user.country}
+                                onChange={(e) =>
+                                  setUser({ ...user, country: e.target.value })
+                                }
+                              />
+                            ) : (
+                              <p className="p-2.5 bg-gray-50 rounded-md border text-foreground">
+                                {user.country}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
+
                   {isEditing && (
-                    <div className="mt-6 flex justify-end">
+                    <div className="mt-8 flex justify-end gap-3">
+                      <Button
+                        variant="ghost"
+                        onClick={() => setIsEditing(false)}
+                      >
+                        Annuler
+                      </Button>
                       <Button
                         onClick={handleSaveProfile}
                         className="bg-primary hover:bg-primary-dark"
                       >
-                        Enregistrer ✅
+                        Enregistrer les modifications ✅
                       </Button>
                     </div>
                   )}
@@ -283,7 +421,6 @@ const Account = () => {
                   ) : (
                     <div className="space-y-4">
                       {orders.map((order) => {
-                        // --- LOGIQUE DE CALCUL DU STATUT RÉEL ---
                         let statusKey: keyof typeof statusIcons = "pending";
                         let statusLabel = "En attente";
 
