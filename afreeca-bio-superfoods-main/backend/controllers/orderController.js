@@ -7,33 +7,29 @@ const addOrderItems = async (req, res) => {
   const { items, shippingAddress, totalAmount } = req.body;
 
   try {
-    // Vérification de sécurité de base
     if (!items || items.length === 0) {
       return res
         .status(400)
         .json({ message: "Pas d'articles dans la commande" });
     }
 
-    // Création de l'objet commande selon ton OrderSchema
     const order = new Order({
-      // req.user est injecté par le middleware protect
       user: req.user._id,
       orderItems: items.map((item) => ({
         name: item.name,
         quantity: item.quantity,
-        // ON BLINDE ICI : On teste toutes les clés possibles envoyées par le front
         image_url:
           item.image_url ||
           item.image ||
           item.imageUrl ||
           "https://via.placeholder.com/150",
         price: item.price,
-        product: item.id || item.product, // On s'assure d'avoir l'ID
+        product: item.id || item.product,
       })),
       shippingAddress: {
         street: shippingAddress.street,
         city: shippingAddress.city,
-        zip: shippingAddress.zipCode, // Mapping Front (zipCode) -> Back (zip)
+        zip: shippingAddress.zipCode,
         country: shippingAddress.country,
       },
       paymentMethod: "Stripe",
@@ -48,7 +44,6 @@ const addOrderItems = async (req, res) => {
     console.log("✅ Commande enregistrée dans MongoDB !");
     res.status(201).json(createdOrder);
   } catch (error) {
-    // Si ça foire (ex: erreur de validation Mongoose), on renvoie du JSON !
     console.error("❌ Erreur lors de la sauvegarde :", error.message);
     res.status(500).json({
       message: "Erreur lors de la création de la commande",
@@ -57,9 +52,11 @@ const addOrderItems = async (req, res) => {
   }
 };
 
+// @desc    Récupérer les commandes de l'utilisateur connecté
+// @route   GET /api/orders/myorders
+// @access  Private
 const getMyOrders = async (req, res) => {
   try {
-    // On cherche toutes les commandes où l'ID user correspond à celui du token
     const orders = await Order.find({ user: req.user._id }).sort({
       createdAt: -1,
     });
@@ -71,4 +68,50 @@ const getMyOrders = async (req, res) => {
   }
 };
 
-module.exports = { addOrderItems, getMyOrders };
+// --- NOUVELLES FONCTIONS ADMIN 🚀 ---
+
+// @desc    Récupérer TOUTES les commandes (Admin)
+// @route   GET /api/orders
+// @access  Private/Admin
+const getOrders = async (req, res) => {
+  try {
+    // On récupère tout et on populate pour avoir le nom de l'acheteur
+    const orders = await Order.find({})
+      .populate("user", "id firstName lastName email")
+      .sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la récupération globale" });
+  }
+};
+
+// @desc    Mettre à jour une commande en "Livré"
+// @route   PUT /api/orders/:id/deliver
+// @access  Private/Admin
+const updateOrderToDelivered = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+      order.status = "delivered"; // On synchronise aussi le champ texte
+
+      const updatedOrder = await order.save();
+      res.json(updatedOrder);
+    } else {
+      res.status(404).json({ message: "Commande non trouvée" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erreur lors de la mise à jour du statut" });
+  }
+};
+
+module.exports = {
+  addOrderItems,
+  getMyOrders,
+  getOrders,
+  updateOrderToDelivered,
+};

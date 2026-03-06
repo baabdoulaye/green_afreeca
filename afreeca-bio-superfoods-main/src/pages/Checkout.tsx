@@ -37,15 +37,23 @@ const Checkout = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [shippingInfo, setShippingInfo] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    postalCode: "",
-    country: "France",
+  const [shippingInfo, setShippingInfo] = useState(() => {
+    // 1. On récupère les infos sauvegardées hier dans le profil
+    const savedUser = localStorage.getItem("userInfo");
+    const user = savedUser ? JSON.parse(savedUser) : null;
+
+    // 2. On pré-remplit l'objet avec les données du profil ou du vide par défaut
+    return {
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
+      address: user?.address || "",
+      city: user?.city || "",
+      // Attention : vérifie si tu utilises 'postalCode' ou 'zipCode' dans ton profil
+      postalCode: user?.zipCode || user?.postalCode || "",
+      country: user?.country || "Sénégal", // Par défaut Sénégal comme sur ton profil
+    };
   });
 
   useEffect(() => {
@@ -95,7 +103,7 @@ const Checkout = () => {
       toast({
         title: "Erreur d'authentification 🔑",
         description:
-          "Ton badge d'accès est manquant. Reconnecte-toi, enfoiré !",
+          "Votre badge d'accès est manquant. Une reconnexion est requise.",
         variant: "destructive",
       });
       setIsSubmitting(false);

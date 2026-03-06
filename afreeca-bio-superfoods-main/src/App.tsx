@@ -21,6 +21,7 @@ import LegalNotice from "./pages/LegalNotice";
 import Privacy from "./pages/Privacy";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+// import AdminOrders from "./pages/AdminOrders";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +48,12 @@ const App = () => (
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/cgv" element={<Terms />} />
                 <Route path="/mentions-legales" element={<LegalNotice />} />
-                <Route path="/politique-confidentialite" element={<Privacy />} />
+                {/* <Route path="/admin/orders" element={<AdminOrders />} /> */}
+
+                <Route
+                  path="/politique-confidentialite"
+                  element={<Privacy />}
+                />
                 <Route path="/admin" element={<Admin />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

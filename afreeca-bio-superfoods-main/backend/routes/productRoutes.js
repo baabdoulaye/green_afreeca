@@ -8,17 +8,22 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 
-// On garde les imports de middleware mais on ne les utilise pas pour l'instant
+// On garde les imports pour la suite, quand on réactivera la sécurité
 const { protect, authorize } = require("../middleware/authMiddleware");
 
-// --- ROUTES DE TEST (SANS PROTECT) ---
+// --- ROUTES DES PRODUITS ---
 
-router.route("/").get(getProducts).post(createProduct); // Protection retirée temporairement
+// Route pour l'ensemble des produits
+router
+  .route("/")
+  .get(getProducts) // Voir tous les produits (Gingembre, Moringa, etc.)
+  .post(createProduct); // Ajouter un nouveau super-aliment
 
+// Route pour un produit spécifique via son ID
 router
   .route("/:id")
-  .get(getProductById)
-  .put(updateProduct) // AJOUTÉ; // Protection retirée temporairement
-  .delete(deleteProduct);
+  .get(getProductById) // Voir les détails d'un produit
+  .put(updateProduct) // Modifier un prix ou une description
+  .delete(deleteProduct); // Supprimer un produit du catalogue
 
 module.exports = router;

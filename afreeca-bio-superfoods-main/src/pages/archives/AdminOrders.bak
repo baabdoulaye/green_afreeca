@@ -1,0 +1,147 @@
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { CheckCircle, Clock, Package, User } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const AdminOrders = () => {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  const fetchOrders = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch("http://localhost:3000/api/orders", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setOrders(data);
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les commandes",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const deliverOrder = async (orderId: string) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/orders/${orderId}/deliver`,
+        {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (response.ok) {
+        toast({
+          title: "Succès ✅",
+          description: "Commande marquée comme livrée !",
+        });
+        fetchOrders(); // On rafraîchit la liste
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Échec de la mise à jour",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <div className="container mx-auto py-10 px-4">
+      <h1 className="text-3xl font-bold mb-8">Gestion des Commandes 📦</h1>
+
+      {isLoading ? (
+        <p>Chargement du QG...</p>
+      ) : (
+        <div className="grid gap-6">
+          {orders.map((order) => (
+            <Card key={order._id} className="p-6">
+              <div className="flex flex-col md:flex-row justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4 text-primary" />
+                    <span className="font-bold">
+                      {order.user?.firstName} {order.user?.lastName}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      ({order.user?.email})
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground italic">
+                    📍 {order.shippingAddress.street},{" "}
+                    {order.shippingAddress.city}
+                  </p>
+                  <div className="pt-2">
+                    {order.orderItems.map((item: any, i: number) => (
+                      <p key={i} className="text-sm">
+                        {item.quantity}x {item.name}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-end justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={order.isPaid ? "default" : "destructive"}
+                      className="bg-green-100 text-green-800 border-green-200"
+                    >
+                      {order.isPaid ? "PAYÉ" : "NON PAYÉ"}
+                    </Badge>
+                    <Badge
+                      className={cn(
+                        order.isDelivered
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-yellow-100 text-yellow-800",
+                      )}
+                    >
+                      {order.isDelivered ? "LIVRÉ" : "EN ATTENTE"}
+                    </Badge>
+                  </div>
+                  <p className="text-xl font-bold text-primary">
+                    {order.totalPrice.toFixed(2)} €
+                  </p>
+
+                  {!order.isDelivered && (
+                    <Button
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            "Es-tu sûr que cette commande a bien été livrée ? 🚚",
+                          )
+                        ) {
+                          deliverOrder(order._id);
+                        }
+                      }}
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" /> Marquer comme
+                      Livré
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AdminOrders;
