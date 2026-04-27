@@ -43,6 +43,7 @@ const Admin = () => {
     category: "Jus",
     slug: "",
     description: "",
+    stock: 0,
   });
 
   const [stats, setStats] = useState({
@@ -129,28 +130,42 @@ const Admin = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 1. On prépare l'objet avec le champ 'stock' (converti en nombre)
     const productData = {
       name: newProduct.name,
       price: parseFloat(newProduct.price.toString().replace(",", ".")),
-      slug: newProduct.slug,
+      stock: parseInt(newProduct.stock.toString() || "0"), // Ajout du stock ici
       category: newProduct.category,
-      description: newProduct.description,
+      // Sécurité : si le slug est vide, on en génère un à partir du nom
+      slug:
+        newProduct.slug ||
+        newProduct.name.toLowerCase().trim().replace(/\s+/g, "-"),
+      // Sécurité : description par défaut si vide
+      description:
+        newProduct.description ||
+        `Délicieux ${newProduct.name} de Green Afreeca.`,
+      image_url: "/placeholder.png", // Valeur par défaut pour éviter l'erreur backend
     };
 
     try {
       if (editingProduct) {
+        // MODE EDITION
         await productService.updateProduct(editingProduct._id, productData);
         toast({
           title: "Produit mis à jour ! 🔄",
-          description: `${productData.name} a été modifié.`,
+          description: `${productData.name} a été modifié avec un stock de ${productData.stock}.`,
         });
       } else {
+        // MODE CREATION
         await productService.createProduct(productData);
         toast({
           title: "Produit créé ! 🌿",
-          description: `${productData.name} est en ligne.`,
+          description: `${productData.name} est en ligne avec un stock de ${productData.stock}.`,
         });
       }
+
+      // 2. On ferme et on reset tout proprement
       setIsDialogOpen(false);
       setEditingProduct(null);
       setNewProduct({
@@ -159,10 +174,18 @@ const Admin = () => {
         category: "Jus",
         slug: "",
         description: "",
+        stock: 0, // On reset aussi le stock en string pour l'input
       });
+
+      // 3. On rafraîchit la liste pour voir les changements
       fetchData();
     } catch (error) {
-      toast({ variant: "destructive", title: "Erreur ❌" });
+      console.error("Erreur lors de l'envoi:", error);
+      toast({
+        variant: "destructive",
+        title: "Erreur ❌",
+        description: "Vérifie que tous les champs sont bien remplis.",
+      });
     }
   };
 
@@ -194,6 +217,7 @@ const Admin = () => {
       category: product.category,
       slug: product.slug,
       description: product.description || "",
+      stock: product.stock,
     });
     setIsDialogOpen(true);
   };
@@ -280,8 +304,8 @@ const Admin = () => {
                       </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Nom</Label>
+                      <div className="space-y-2 text-left">
+                        <Label htmlFor="name">Nom du produit</Label>
                         <Input
                           id="name"
                           value={newProduct.name}
@@ -291,14 +315,17 @@ const Admin = () => {
                               name: e.target.value,
                             })
                           }
+                          placeholder="Ex: Jus de Bouille"
                           required
                         />
                       </div>
+
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
+                        <div className="space-y-2 text-left">
                           <Label htmlFor="price">Prix (€)</Label>
                           <Input
                             id="price"
+                            type="text"
                             value={newProduct.price}
                             onChange={(e) =>
                               setNewProduct({
@@ -306,28 +333,51 @@ const Admin = () => {
                                 price: e.target.value,
                               })
                             }
+                            placeholder="6.50"
                             required
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="category">Catégorie</Label>
-                          <select
-                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            value={newProduct.category}
+                        <div className="space-y-2 text-left">
+                          <Label htmlFor="stock">Stock initial</Label>
+                          <Input
+                            id="stock"
+                            type="number"
+                            value={newProduct.stock}
                             onChange={(e) =>
                               setNewProduct({
                                 ...newProduct,
-                                category: e.target.value,
+                                stock: parseFloat(e.target.value),
                               })
                             }
-                          >
-                            <option value="Jus">Jus</option>
-                            <option value="Poudre">Poudre</option>
-                          </select>
+                            placeholder="50"
+                            required
+                          />
                         </div>
                       </div>
-                      <Button type="submit" className="w-full bg-[#22c55e]">
-                        Valider
+
+                      <div className="space-y-2 text-left">
+                        <Label htmlFor="category">Catégorie</Label>
+                        <select
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                          value={newProduct.category}
+                          onChange={(e) =>
+                            setNewProduct({
+                              ...newProduct,
+                              category: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="Jus">Jus</option>
+                          <option value="Poudre">Poudre</option>
+                          <option value="Jus/Poudre">Jus/Poudre</option>
+                        </select>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-[#22c55e] hover:bg-[#16a34a] mt-4"
+                      >
+                        {editingProduct ? "Mettre à jour" : "Créer le produit"}
                       </Button>
                     </form>
                   </DialogContent>
