@@ -8,11 +8,13 @@ const OrderItemSchema = new mongoose.Schema({
   quantity: { type: Number, required: true },
   image_url: { type: String, required: true },
   price: { type: Number, required: true },
-  // Référence à l'ID du produit dans la collection Product
+  // 💡 ON CHANGE LE TYPE ICI :
+  // On passe de ObjectId à String pour accepter "bissap" ou "baobab"
   product: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     required: true,
-    ref: "Product", // Fait référence au modèle Product
+    // On peut garder la ref, mais le type String est plus flexible pour tes tests
+    ref: "Product",
   },
 });
 
@@ -90,7 +92,7 @@ const OrderSchema = new mongoose.Schema(
       type: Date,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 ); // Ajoute createdAt et updatedAt
 
 module.exports = mongoose.model("Order", OrderSchema);

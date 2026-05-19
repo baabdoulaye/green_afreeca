@@ -1,4 +1,5 @@
 const Order = require("../models/Order");
+const Product = require("../models/Product"); // On importe le modèle Product pour modifier les stocks
 
 // @desc    Créer une nouvelle commande
 // @route   POST /api/orders
@@ -42,6 +43,29 @@ const addOrderItems = async (req, res) => {
 
     const createdOrder = await order.save();
     console.log("✅ Commande enregistrée dans MongoDB !");
+
+    // --- MISE À JOUR DES STOCKS SÉCURISÉE 📉 ---
+    for (const item of createdOrder.orderItems) {
+      // On vérifie si l'ID est un ObjectId MongoDB valide (24 caractères hexadécimaux)
+      // pour éviter l'erreur "Cast to ObjectId failed"
+      if (item.product && /^[0-9a-fA-F]{24}$/.test(item.product.toString())) {
+        try {
+          await Product.findByIdAndUpdate(item.product, {
+            $inc: { stock: -item.quantity },
+          });
+          console.log(`📉 Stock mis à jour pour : ${item.name}`);
+        } catch (stockErr) {
+          console.error(`⚠️ Erreur stock pour ${item.name}:`, stockErr.message);
+        }
+      } else {
+        // Si l'ID est "bissap" ou "baobab", on affiche juste un avertissement sans planter
+        console.warn(
+          `⚠️ ID invalide pour "${item.name}" (${item.product}), stock non déduit.`,
+        );
+      }
+    }
+    // --------------------------------
+
     res.status(201).json(createdOrder);
   } catch (error) {
     console.error("❌ Erreur lors de la sauvegarde :", error.message);

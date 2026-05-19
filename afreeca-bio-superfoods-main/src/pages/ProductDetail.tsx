@@ -7,6 +7,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   ShoppingCart,
   ArrowLeft,
@@ -19,8 +20,9 @@ import {
   Lock,
   CreditCard,
   CheckCircle,
+  XCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import {
   Accordion,
@@ -66,14 +68,16 @@ interface Product {
   usage: string;
   anecdotes: string[];
   faq: FAQ[];
+  stock: number;
 }
 
 // Données produits détaillées
 const products: Record<string, Product> = {
   baobab: {
-    id: "baobab",
+    id: "693950e9d2976ccf8e91f2ab",
     name: "Jus de Bouille (Baobab)",
     category: "Jus",
+    stock: 0,
     variants: [
       { id: "baobab-50cl", dose: "50 cl", price: 3.0 },
       { id: "baobab-1l", dose: "1 litre", price: 5.0 },
@@ -151,9 +155,10 @@ const products: Record<string, Product> = {
     ],
   },
   bissap: {
-    id: "bissap",
+    id: "694baa4fe909d448ac578e62",
     name: "Jus de Bissap",
     category: "Jus",
+    stock: 0,
     variants: [
       { id: "bissap-50cl", dose: "50 cl", price: 3.0 },
       { id: "bissap-1l", dose: "1 litre", price: 5.0 },
@@ -231,9 +236,10 @@ const products: Record<string, Product> = {
     ],
   },
   moringa: {
-    id: "moringa",
+    id: "694baa4fe909d448ac578e63",
     name: "Moringa",
     category: "Feuilles & Poudres",
+    stock: 0,
     variants: [
       {
         id: "moringa-poudre",
@@ -319,9 +325,10 @@ const products: Record<string, Product> = {
     ],
   },
   ginger: {
-    id: "ginger",
+    id: "693be7a82b88c5d3cf7963a5",
     name: "Jus de Gingembre",
     category: "Jus",
+    stock: 0,
     variants: [
       { id: "ginger-50cl", dose: "50 cl", price: 4.0 },
       { id: "ginger-1l", dose: "1 litre", price: 7.0 },
@@ -407,8 +414,53 @@ const ProductDetail = () => {
   const [selectedVariant, setSelectedVariant] = useState(0);
   const { addToCart } = useCart();
 
-  const product = id ? products[id] : undefined;
+  // 1. On initialise le produit avec les données locales (pour l'affichage immédiat)
+  const [product, setProduct] = useState<Product | undefined>(
+    id ? products[id] : undefined,
+  );
 
+  // 2. On va chercher les données fraîches (stock) sur l'API au chargement
+  useEffect(() => {
+    const refreshStock = async () => {
+      if (!product) return;
+
+      const targetId = product.id;
+      if (!targetId) return;
+
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/products/${targetId}`,
+        );
+
+        if (response.ok) {
+          const freshData = await response.json();
+
+          // 💡 LA CORRECTION : On va chercher dans freshData.data au lieu de freshData tout court
+          if (
+            freshData &&
+            freshData.data &&
+            typeof freshData.data.stock !== "undefined"
+          ) {
+            setProduct((prev) => {
+              if (!prev) return undefined;
+              return {
+                ...prev,
+                stock: freshData.data.stock, // 🎯 On cible freshData.data.stock !
+              };
+            });
+          }
+        }
+      } catch (error) {
+        console.warn(
+          "Impossible de récupérer le stock dynamique, maintien du local à 0.",
+        );
+      }
+    };
+
+    refreshStock();
+  }, [id, product?.id]);
+  // 🛡️ SÉCURITÉ : Si le produit n'existe pas (mauvaise URL ou chargement),
+  // on affiche ce message AU LIEU de lire product.variants et de faire crasher l'appli.
   if (!product) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -427,20 +479,23 @@ const ProductDetail = () => {
     );
   }
 
+  // 💡 Maintenant qu'on a vérifié que "product" existe juste au-dessus,
+  // cette ligne est 100% sûre et ne plantera jamais !
   const currentVariant = product.variants[selectedVariant];
 
   const handleAddToCart = () => {
-    if (!product) return;
     addToCart({
       id: product.id,
       name: product.name,
       price: currentVariant.price,
-      image: product.image,
+      image_url: product.image,
       dose: currentVariant.dose,
       variant: currentVariant.id,
       quantity,
     });
   };
+
+  // En dessous, tu laisses ton "return (...)" avec tout ton design HTML/Tailwind (la Card, le bouton, etc.)
 
   const incrementQuantity = () => setQuantity((prev) => prev + 1);
   const decrementQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
@@ -508,28 +563,48 @@ const ProductDetail = () => {
               </div>
             </div>
 
-            {/* Quantité et ajout au panier */}
             <Card className="p-6">
               <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-semibold text-foreground">
-                    Quantité :
-                  </span>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-foreground">
+                      Quantité :
+                    </span>
+                    {/* On affiche le stock restant pour informer le client */}
+                    <span
+                      className={cn(
+                        "text-[11px] font-medium px-2 py-0.5 rounded-full",
+                        product.stock <= 5
+                          ? "bg-red-50 text-red-600"
+                          : "bg-gray-100 text-gray-600",
+                      )}
+                    >
+                      {product.stock > 0
+                        ? `${product.stock} disponibles`
+                        : "Stock épuisé"}
+                    </span>
+                  </div>
+
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="icon"
                       onClick={decrementQuantity}
+                      disabled={quantity <= 1 || product.stock <= 0} // Désactivé si déjà à 1 ou si stock vide
                     >
                       <Minus className="h-4 w-4" />
                     </Button>
+
                     <span className="text-xl font-bold w-12 text-center">
-                      {quantity}
+                      {product.stock > 0 ? quantity : 0}
                     </span>
+
                     <Button
                       variant="outline"
                       size="icon"
                       onClick={incrementQuantity}
+                      // SÉCURITÉ : On empêche d'augmenter au-delà du stock disponible
+                      disabled={quantity >= product.stock || product.stock <= 0}
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
@@ -540,10 +615,21 @@ const ProductDetail = () => {
                   size="lg"
                   className="w-full gap-2"
                   onClick={handleAddToCart}
+                  // SÉCURITÉ : Désactive le bouton si le stock est à 0
+                  disabled={product.stock <= 0}
                 >
-                  <ShoppingCart className="h-5 w-5" />
-                  Ajouter au panier -{" "}
-                  {(currentVariant.price * quantity).toFixed(2)}€
+                  {product.stock > 0 ? (
+                    <>
+                      <ShoppingCart className="h-5 w-5" />
+                      Ajouter au panier -{" "}
+                      {(currentVariant.price * quantity).toFixed(2)}€
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="h-5 w-5" />
+                      Produit épuisé
+                    </>
+                  )}
                 </Button>
               </div>
             </Card>

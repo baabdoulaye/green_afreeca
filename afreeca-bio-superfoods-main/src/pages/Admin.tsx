@@ -74,24 +74,45 @@ const Admin = () => {
   const fetchOrders = async () => {
     setOrdersLoading(true);
     const token = localStorage.getItem("token");
+
+    // Sécurité 1 : Si pas de token, on arrête tout de suite
+    if (!token) {
+      setOrders([]);
+      setOrdersLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:3000/api/orders", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await response.json();
-      setOrders(data);
 
-      // Calcul du revenu basé sur les commandes payées
-      const totalRev = data.reduce(
-        (acc: number, o: any) => acc + (o.isPaid ? o.totalPrice : 0),
-        0,
-      );
-      setStats((prev) => ({
-        ...prev,
-        totalOrders: data.length,
-        revenue: totalRev,
-      }));
+      const data = await response.json();
+
+      // Sécurité 2 : On vérifie si data est bien un tableau (Array)
+      if (Array.isArray(data)) {
+        setOrders(data);
+
+        // Calcul du revenu basé sur les commandes payées
+        const totalRev = data.reduce(
+          (acc: number, o: any) => acc + (o.isPaid ? o.totalPrice : 0),
+          0,
+        );
+
+        setStats((prev) => ({
+          ...prev,
+          totalOrders: data.length,
+          revenue: totalRev,
+        }));
+      } else {
+        // Si le serveur renvoie une erreur (ex: 401), on vide les stats proprement
+        console.warn("Réponse API invalide (pas un tableau) :", data);
+        setOrders([]);
+        setStats((prev) => ({ ...prev, totalOrders: 0, revenue: 0 }));
+      }
     } catch (error) {
+      console.error("Erreur fetch orders:", error);
+      setOrders([]); // Évite le crash au rendu
       toast({
         title: "Erreur",
         description: "Impossible de charger les commandes",
@@ -393,10 +414,10 @@ const Admin = () => {
                   {products.map((p) => (
                     <div
                       key={p._id}
-                      className="p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 flex justify-between items-center shadow-sm"
+                      className="p-4 border border-gray-100 rounded-2xl hover:bg-gray-50 flex justify-between items-center shadow-sm transition-all"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="h-14 w-14 rounded-xl bg-gray-100 overflow-hidden border">
+                        <div className="h-14 w-14 rounded-xl bg-gray-100 overflow-hidden border shrink-0">
                           <img
                             src={`http://localhost:3000${p.image_url}`}
                             className="w-full h-full object-cover"
@@ -407,17 +428,40 @@ const Admin = () => {
                             }}
                           />
                         </div>
-                        <div>
-                          <h3 className="font-bold text-gray-900">{p.name}</h3>
-                          <p className="text-sm font-medium text-[#22c55e] uppercase">
-                            {p.category} — {p.price.toFixed(2)}€
-                          </p>
+                        <div className="text-left">
+                          <h3 className="font-bold text-gray-900 leading-tight">
+                            {p.name}
+                          </h3>
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
+                            <p className="text-sm font-medium text-[#22c55e] uppercase tracking-wider">
+                              {p.category} — {p.price.toFixed(2)}€
+                            </p>
+
+                            {/* BADGE DE STOCK DYNAMIQUE */}
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "text-[10px] px-2 py-0 h-5 border-none font-semibold w-fit",
+                                p.stock <= 0
+                                  ? "bg-red-100 text-red-700 animate-pulse" // Rouge clignotant si rupture
+                                  : p.stock <= 10
+                                    ? "bg-orange-100 text-orange-700" // Orange si stock faible
+                                    : "bg-green-100 text-green-700", // Vert si tout est OK
+                              )}
+                            >
+                              {p.stock <= 0
+                                ? "RUPTURE ⚠️"
+                                : `${p.stock} en réserve`}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
+
                       <div className="flex gap-2">
                         <Button
                           variant="outline"
                           size="sm"
+                          className="rounded-xl border-gray-200 hover:bg-green-50 hover:text-green-600 transition-colors"
                           onClick={() => openEditDialog(p)}
                         >
                           <Edit className="h-4 w-4" />
@@ -425,7 +469,7 @@ const Admin = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="text-red-500"
+                          className="rounded-xl border-gray-200 text-red-500 hover:bg-red-50 hover:text-red-700 transition-colors"
                           onClick={() => handleDelete(p._id, p.name)}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -455,63 +499,91 @@ const Admin = () => {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {orders.map((order) => (
-                    <div
-                      key={order._id}
-                      className="p-5 border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all shadow-sm"
-                    >
-                      <div className="flex flex-col md:flex-row justify-between gap-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-[#22c55e]" />
-                            <span className="font-bold">
-                              {order.user?.firstName} {order.user?.lastName}
-                            </span>
-                            <Badge
-                              className={cn(
-                                "ml-2",
-                                order.isDelivered
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-yellow-100 text-yellow-800",
-                              )}
-                            >
-                              {order.isDelivered ? "LIVRÉ" : "EN ATTENTE"}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground italic">
-                            📍 {order.shippingAddress.street},{" "}
-                            {order.shippingAddress.city}
-                          </p>
-                          <div className="text-xs text-gray-500 pt-1">
-                            {order.orderItems.map((item: any, i: number) => (
-                              <span key={i}>
-                                {item.quantity}x {item.name}
-                                {i < order.orderItems.length - 1 ? ", " : ""}
+                <div className="space-y-4 text-left">
+                  {/* On vérifie si "orders" est bien une liste et s'il y a des commandes dedans */}
+                  {Array.isArray(orders) && orders.length > 0 ? (
+                    orders.map((order) => (
+                      <div
+                        key={order._id}
+                        className="p-5 border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all shadow-sm bg-white"
+                      >
+                        <div className="flex flex-col md:flex-row justify-between gap-4">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-[#22c55e]" />
+                              <span className="font-bold text-gray-900">
+                                {/* Sécurité : affiche "Client" si le nom est introuvable */}
+                                {order.user?.firstName || "Client"}{" "}
+                                {order.user?.lastName || ""}
                               </span>
-                            ))}
+                              <Badge
+                                className={cn(
+                                  "ml-2 rounded-lg border-none",
+                                  order.isDelivered
+                                    ? "bg-blue-100 text-blue-800"
+                                    : "bg-yellow-100 text-yellow-800",
+                                )}
+                              >
+                                {order.isDelivered ? "LIVRÉ" : "EN ATTENTE"}
+                              </Badge>
+                            </div>
+
+                            {/* Adresse de livraison sécurisée */}
+                            <p className="text-sm text-muted-foreground italic">
+                              📍{" "}
+                              {order.shippingAddress?.street ||
+                                "Adresse non renseignée"}
+                              , {order.shippingAddress?.city || ""}
+                            </p>
+
+                            {/* Liste des articles achetés */}
+                            <div className="text-xs text-gray-500 pt-1 bg-gray-50 p-2 rounded-lg">
+                              {order.orderItems?.map((item: any, i: number) => (
+                                <span key={i}>
+                                  {item.quantity}x {item.name}
+                                  {i < order.orderItems.length - 1 ? ", " : ""}
+                                </span>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex flex-col items-end justify-between gap-3">
-                          <span className="text-xl font-bold text-[#22c55e]">
-                            {order.totalPrice.toFixed(2)} €
-                          </span>
-                          {!order.isDelivered && (
-                            <Button
-                              size="sm"
-                              className="bg-[#22c55e] hover:bg-[#16a34a]"
-                              onClick={() =>
-                                window.confirm("Confirmer la livraison ?") &&
-                                deliverOrder(order._id)
-                              }
-                            >
-                              <CheckCircle className="h-4 w-4 mr-2" /> Livrer
-                            </Button>
-                          )}
+
+                          <div className="flex flex-col items-end justify-between gap-3">
+                            <span className="text-xl font-bold text-[#22c55e]">
+                              {/* Sécurité sur le prix */}
+                              {order.totalPrice
+                                ? Number(order.totalPrice).toFixed(2)
+                                : "0.00"}{" "}
+                              €
+                            </span>
+
+                            {/* Bouton pour livrer - ne s'affiche que si pas encore livré */}
+                            {!order.isDelivered && (
+                              <Button
+                                size="sm"
+                                className="bg-[#22c55e] hover:bg-[#16a34a] rounded-xl shadow-sm"
+                                onClick={() =>
+                                  window.confirm(
+                                    `Confirmer la livraison pour ${order.user?.firstName || "ce client"} ? 🚚`,
+                                  ) && deliverOrder(order._id)
+                                }
+                              >
+                                <CheckCircle className="h-4 w-4 mr-2" /> Marquer
+                                comme Livré
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    /* Ce qui s'affiche si la liste est vide ou si tu n'es pas connecté */
+                    <div className="p-20 text-center border-2 border-dashed rounded-3xl bg-gray-50/50">
+                      <ShoppingCart className="h-12 w-12 text-gray-200 mx-auto mb-4" />
+                      <p className="text-gray-400 font-medium">
+                        Aucune commande trouvée ou session expirée. 🔌
+                      </p>
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
             </Card>
