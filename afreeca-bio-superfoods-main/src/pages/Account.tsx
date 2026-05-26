@@ -129,7 +129,7 @@ const Account = () => {
     localStorage.setItem("userInfo", JSON.stringify(user));
     window.dispatchEvent(new Event("userLogin"));
     toast({
-      title: "Profil mis à jour ! ✅",
+      title: "Profil mis à jour ! ",
       description: "Toutes tes informations ont été enregistrées.",
     });
     setIsEditing(false);
@@ -214,7 +214,7 @@ const Account = () => {
                 <Card className="p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-bold text-foreground">
-                      Informations personnelles 📝
+                      Informations personnelles
                     </h3>
                     <Button
                       variant="outline"
@@ -394,7 +394,7 @@ const Account = () => {
                         onClick={handleSaveProfile}
                         className="bg-primary hover:bg-primary-dark"
                       >
-                        Enregistrer les modifications ✅
+                        Enregistrer les modifications
                       </Button>
                     </div>
                   )}
@@ -404,7 +404,7 @@ const Account = () => {
               <TabsContent value="orders">
                 <Card className="p-6">
                   <h3 className="text-xl font-bold text-foreground mb-6">
-                    Historique des commandes 📦
+                    Historique des commandes
                   </h3>
 
                   {isLoadingOrders ? (

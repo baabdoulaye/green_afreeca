@@ -23,6 +23,7 @@ import {
   Package,
   Clock,
   Handshake,
+  GlassWater,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 // import heroImage from "@/assets/hero-superfoods.jpg";
@@ -394,7 +395,7 @@ const Home = () => {
               <div className="bg-gradient-to-br from-destructive/10 to-destructive/5 p-8 rounded-3xl border border-destructive/20 flex flex-col justify-center backdrop-blur-sm hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-12 w-12 rounded-full bg-destructive/20 flex items-center justify-center">
-                    <span className="text-2xl">⚠️</span>
+                    <span className="text-2xl"></span>
                   </div>
                   <h3 className="text-2xl font-bold text-destructive">
                     Une Réalité Alarmante
@@ -434,7 +435,7 @@ const Home = () => {
               <div className="bg-gradient-to-br from-card to-muted p-8 rounded-3xl border border-border shadow-lg flex flex-col justify-center order-1 lg:order-2 hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
-                    <span className="text-2xl">💊</span>
+                    <span className="text-2xl"></span>
                   </div>
                   <h3 className="text-2xl font-bold text-primary">
                     Le Problème des Compléments
@@ -461,7 +462,7 @@ const Home = () => {
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-3 mb-4">
                   <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
-                    <span className="text-2xl">✨</span>
+                    <span className="text-2xl"></span>
                   </div>
                   <h3 className="text-2xl font-bold text-primary">
                     La Puissance Naturelle
@@ -682,7 +683,7 @@ const Home = () => {
                 <Truck className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-2 text-foreground">
-                Livraison Rapide ⚡
+                Livraison Rapide
               </h3>
               <p className="text-muted-foreground">
                 Expédition sous 24-48h ouvrées
@@ -694,7 +695,7 @@ const Home = () => {
                 <Package className="h-8 w-8 text-accent-foreground" />
               </div>
               <h3 className="text-xl font-bold mb-2 text-foreground">
-                Emballage Soigné 📦
+                Emballage Soigné
               </h3>
               <p className="text-muted-foreground">
                 Produits protégés pour une fraîcheur garantie
@@ -703,10 +704,10 @@ const Home = () => {
 
             <div className="bg-card p-8 rounded-2xl shadow-md hover:shadow-elegant transition-all text-center">
               <div className="h-16 w-16 rounded-full bg-secondary/20 flex items-center justify-center mx-auto mb-4">
-                <Clock className="h-8 w-8 text-secondary" />
+                <GlassWater className="h-8 w-8 text-secondary" />
               </div>
               <h3 className="text-xl font-bold mb-2 text-foreground">
-                Fraîcheur Garantie ❄️
+                Fraîcheur Garantie
               </h3>
               <p className="text-muted-foreground">
                 Conservation optimale jusqu'à réception

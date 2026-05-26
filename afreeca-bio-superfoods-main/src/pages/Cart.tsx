@@ -27,6 +27,19 @@ const Cart = () => {
   const shipping = totalPrice > 30 ? 0 : 4.99;
   const total = totalPrice + shipping;
 
+  // 💡 NOUVEAU : Fonction intelligente pour le panier (même logique que Products.tsx)
+  const getCartImageUrl = (url?: string) => {
+    if (!url)
+      return "https://placehold.co/600x400/e2e8f0/475569?text=Green+Afreeca";
+    if (url.startsWith("http")) return url;
+
+    let fileName = url.split("/").pop();
+    if (fileName === "placeholder.png" || fileName === "placeholder.svg") {
+      fileName = "baobab-poudre.jpg"; // Hack pour le baobab
+    }
+    return `http://localhost:3000/${fileName}`;
+  };
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -46,7 +59,7 @@ const Cart = () => {
       </div>
     );
   }
-  console.log("Contenu du panier :", items);
+
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="container mx-auto px-4">
@@ -58,7 +71,7 @@ const Cart = () => {
           {/* Liste des articles */}
           <div className="lg:col-span-2 space-y-4">
             <h2 className="text-xl font-semibold text-foreground mb-4">
-              Vos articles ({items.length}) 📦
+              Vos articles ({items.length})
             </h2>
             {items.map((item, index) => (
               <Card
@@ -69,21 +82,20 @@ const Cart = () => {
                 <div className="flex gap-4">
                   <Link
                     to={`/produits/${item.id}`}
-                    className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden"
+                    className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-50"
                   >
                     <img
-                      src={
-                        item.image_url
-                          ? item.image_url.startsWith("/")
-                            ? item.image_url
-                            : `/images/${item.image_url}`
-                          : "/images/placeholder.svg" // Image de secours si image_url est vide
-                      }
+                      // 💡 ON UTILISE NOTRE FONCTION ICI
+                      src={getCartImageUrl(item.image_url)}
                       alt={item.name}
-                      className="w-20 h-20 object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-lg"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          "/images/placeholder.svg"; //
+                        const target = e.target as HTMLImageElement;
+                        // 💡 SÉCURITÉ ANTI-BOUCLE INFINIE
+                        if (!target.src.includes("placehold.co")) {
+                          target.src =
+                            "https://placehold.co/600x400/e2e8f0/475569?text=Green+Afreeca";
+                        }
                       }}
                     />
                   </Link>
@@ -155,10 +167,9 @@ const Cart = () => {
           <div className="lg:col-span-1">
             <Card className="p-6 sticky top-24">
               <h2 className="text-xl font-bold text-foreground mb-6">
-                Récapitulatif 📋
+                Récapitulatif
               </h2>
 
-              {/* Détail des articles */}
               <div className="space-y-3 mb-4 max-h-48 overflow-y-auto">
                 {items.map((item) => (
                   <div
@@ -190,8 +201,8 @@ const Cart = () => {
                 </div>
                 {totalPrice < 30 && (
                   <p className="text-xs text-primary">
-                    💡 Plus que {(30 - totalPrice).toFixed(2)}€ pour la
-                    livraison gratuite !
+                    Plus que {(30 - totalPrice).toFixed(2)}€ pour la livraison
+                    gratuite !
                   </p>
                 )}
               </div>
@@ -205,7 +216,7 @@ const Cart = () => {
 
               <Link to="/checkout">
                 <Button size="lg" className="w-full mb-3">
-                  Passer la commande 🚀
+                  Passer la commande
                 </Button>
               </Link>
 
@@ -220,15 +231,15 @@ const Cart = () => {
                 <div className="flex flex-col gap-2 text-xs text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="h-4 w-4 text-primary" />
-                    <span>Paiement 100% sécurisé 🔒</span>
+                    <span>Paiement 100% sécurisé </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Truck className="h-4 w-4 text-primary" />
-                    <span>Livraison rapide en 48-72h 📦</span>
+                    <span>Livraison rapide en 48-72h </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CreditCard className="h-4 w-4 text-primary" />
-                    <span>CB, PayPal, Apple Pay acceptés 💳</span>
+                    <span>CB, PayPal, Apple Pay acceptés </span>
                   </div>
                 </div>
               </div>

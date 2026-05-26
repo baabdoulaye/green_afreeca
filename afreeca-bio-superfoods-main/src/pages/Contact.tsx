@@ -66,12 +66,12 @@ const Contact = () => {
                   <Mail className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-foreground mb-1">Email ✉️</h3>
+                  <h3 className="font-bold text-foreground mb-1">Email </h3>
                   <p className="text-sm text-primary hover:underline">
                     green-afreeca@outlook.fr
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Réponse sous 24h ⚡
+                    Réponse sous 24h
                   </p>
                 </div>
               </a>
@@ -86,14 +86,12 @@ const Contact = () => {
                   <Phone className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-foreground mb-1">
-                    Téléphone 📞
-                  </h3>
+                  <h3 className="font-bold text-foreground mb-1">Téléphone</h3>
                   <p className="text-sm text-primary hover:underline">
                     06 27 85 75 33
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Lun-Ven 9h-18h 🕘
+                    Lun-Ven 9h-18h
                   </p>
                 </div>
               </a>
@@ -108,7 +106,7 @@ const Contact = () => {
                   <MapPin className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-foreground mb-1">Adresse 📍</h3>
+                  <h3 className="font-bold text-foreground mb-1">Adresse </h3>
                   <p className="text-sm text-muted-foreground">
                     4 rue Bobby Sands
                     <br />

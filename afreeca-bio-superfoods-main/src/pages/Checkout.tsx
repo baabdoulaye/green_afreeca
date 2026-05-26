@@ -197,7 +197,7 @@ const Checkout = () => {
             <ArrowLeft className="h-4 w-4" /> Retour au panier
           </Link>
           <h1 className="text-3xl font-bold text-foreground">
-            Finaliser ma commande 🛍️
+            Finaliser ma commande
           </h1>
         </div>
 
@@ -228,7 +228,7 @@ const Checkout = () => {
             {currentStep === 1 && (
               <Card className="p-6 animate-fade-in">
                 <h2 className="text-xl font-bold mb-4">
-                  Vérifiez vos articles 📦
+                  Vérifiez vos articles
                 </h2>
                 {items.map((item) => (
                   <div
@@ -256,9 +256,7 @@ const Checkout = () => {
 
             {currentStep === 2 && (
               <Card className="p-6 animate-fade-in">
-                <h2 className="text-xl font-bold mb-4">
-                  Adresse de livraison 🚚
-                </h2>
+                <h2 className="text-xl font-bold mb-4">Adresse de livraison</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Prénom</Label>
@@ -349,7 +347,7 @@ const Checkout = () => {
                   <CheckCircle className="h-10 w-10 text-green-600" />
                 </div>
                 <h2 className="text-2xl font-bold mb-2">
-                  Merci, {shippingInfo.firstName} ! 🎉
+                  Merci, {shippingInfo.firstName} !
                 </h2>
                 <p className="text-muted-foreground mb-8">
                   Ta commande a été enregistrée avec succès.
@@ -359,7 +357,7 @@ const Checkout = () => {
                     <Button variant="outline">Continuer</Button>
                   </Link>
                   <Link to="/compte">
-                    <Button>Voir mon historique 📋</Button>
+                    <Button>Voir mon historique </Button>
                   </Link>
                 </div>
               </Card>
