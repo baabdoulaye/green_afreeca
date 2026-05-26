@@ -144,7 +144,7 @@ const Auth = () => {
 
       // --- ÉTAPE ROBUSTE : LES INFOS ---
       // On récupère le prénom peu importe où il se cache dans l'objet
-      const firstName = data.user?.firstName || data.firstName || "Abdoulaye";
+      const firstName = data.user?.firstName || data.firstName || "";
 
       const userToSave = {
         firstName: firstName,
@@ -161,7 +161,7 @@ const Auth = () => {
 
       toast({
         title: "Vous etes connecté",
-        description: `Ravi de vous revoir, ${firstName} !`,
+        description: `Ravi de vous revoir ${firstName} !`,
       });
 
       // Redirection vers l'accueil pour fêter ça

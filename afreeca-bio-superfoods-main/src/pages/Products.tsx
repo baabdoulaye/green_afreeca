@@ -29,10 +29,6 @@ const Products = () => {
     });
   }, []);
 
-  /**
-   * Nettoie le slug pour correspondre à tes URLs (baobab, ginger, bissap, moringa)
-   * Si le slug en BDD est "jus-bissap-bio", il devient "bissap"
-   */
   const getCleanUrl = (product: any) => {
     const textToSearch = (product.slug || product.name || "").toLowerCase();
     if (textToSearch.includes("bissap")) return "bissap";
@@ -42,6 +38,23 @@ const Products = () => {
     if (textToSearch.includes("baobab") || textToSearch.includes("bouille"))
       return "baobab";
     return product.slug || product._id;
+  };
+
+  // 💡 NOUVEAU : Fonction intelligente pour formater l'URL de l'image
+  const getImageUrl = (url: string) => {
+    if (!url)
+      return "https://placehold.co/600x400/e2e8f0/475569?text=Green+Afreeca";
+    if (url.startsWith("http")) return url;
+
+    // On extrait uniquement le nom du fichier (ex: "bissap.jpg" depuis "/images/bissap.jpg")
+    let fileName = url.split("/").pop();
+
+    // Hack de secours : si la BDD a gardé le placeholder, on force l'image du Baobab
+    if (fileName === "placeholder.png") {
+      fileName = "baobab-poudre.jpg";
+    }
+
+    return `${URL_BACKEND}/${fileName}`;
   };
 
   const filteredProducts = products.filter((p) => {
@@ -60,7 +73,6 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-white pb-20">
-      {/* HEADER */}
       <section className="py-12 text-center">
         <h1 className="text-4xl font-bold text-[#22c55e] mb-2">
           Nos Super-Aliments Africains
@@ -71,7 +83,6 @@ const Products = () => {
       </section>
 
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* FILTRES */}
         <div className="flex justify-between items-center mb-10">
           <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-1">
             <Filter className="h-4 w-4 text-gray-400" />
@@ -88,7 +99,6 @@ const Products = () => {
           </div>
         </div>
 
-        {/* GRILLE DE PRODUITS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {filteredProducts.map((p) => {
             const cleanUrl = getCleanUrl(p);
@@ -98,28 +108,22 @@ const Products = () => {
                 key={p._id}
                 className="group overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 rounded-[2rem] bg-white"
               >
-                {/* Image cliquable avec Zoom + Cursor Pointer */}
                 <Link
                   to={`/produits/${cleanUrl}`}
                   className="cursor-pointer block overflow-hidden"
                 >
                   <div className="relative h-52 bg-gray-50">
                     <img
-                      // On force le dossier /images/ et on s'assure que p.image_url ne contient que le nom du fichier
-                      src={
-                        p.image_url.startsWith("/")
-                          ? p.image_url
-                          : `/images/${p.image_url}`
-                      }
+                      // 💡 APPLICATION DE NOTRE FONCTION ICI
+                      src={getImageUrl(p.image_url)}
                       alt={p.name}
                       className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                       onError={(e) => {
-                        console.log(
-                          "Erreur sur l'URL suivante :",
-                          (e.target as HTMLImageElement).src,
+                        console.warn(
+                          "Image non trouvée sur le backend, passage au secours en ligne.",
                         );
                         (e.target as HTMLImageElement).src =
-                          "https://placehold.co/600x400?text=Erreur+Lien";
+                          "https://placehold.co/600x400/e2e8f0/475569?text=Green+Afreeca";
                       }}
                     />
                     <div className="absolute top-4 right-4 bg-[#22c55e] text-white text-[11px] font-bold px-3 py-1 rounded-full z-10 shadow-sm">
@@ -142,7 +146,6 @@ const Products = () => {
                       "Un super-aliment d'exception, riche en nutriments."}
                   </p>
 
-                  {/* Variantes */}
                   <div className="space-y-1 mb-6">
                     <div className="flex justify-between text-[11px] text-gray-500">
                       <span>50 cl / 100g</span>
@@ -158,7 +161,6 @@ const Products = () => {
                     </div>
                   </div>
 
-                  {/* Boutons d'action */}
                   <div className="flex gap-2">
                     <Link to={`/produits/${cleanUrl}`} className="flex-1">
                       <Button
@@ -175,7 +177,7 @@ const Products = () => {
                           id: p._id,
                           name: p.name,
                           price: p.price,
-                          image_url: p.image_url,
+                          image_url: getImageUrl(p.image_url), // 💡 Le panier reçoit aussi la bonne image
                           dose: "Standard",
                           variant: p.slug,
                         })
@@ -191,7 +193,6 @@ const Products = () => {
         </div>
       </div>
 
-      {/* Footer "Besoin d'aide" */}
       <section className="mt-20 py-12 bg-green-50/30 text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
           Besoin d'aide pour choisir ?

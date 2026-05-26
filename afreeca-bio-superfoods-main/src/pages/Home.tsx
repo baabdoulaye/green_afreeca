@@ -22,6 +22,7 @@ import {
   Truck,
   Package,
   Clock,
+  Handshake,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 // import heroImage from "@/assets/hero-superfoods.jpg";
@@ -186,7 +187,7 @@ const Home = () => {
               style={{ animationDelay: "0.3s" }}
             >
               <div className="h-16 w-16 rounded-full bg-primary-light flex items-center justify-center mb-6">
-                <Sparkles className="h-8 w-8 text-primary" />
+                <Handshake className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-4 text-foreground">
                 Commerce Équitable
@@ -208,7 +209,7 @@ const Home = () => {
           </h2>
           <p className="text-xl text-center text-muted-foreground mb-16 max-w-3xl mx-auto">
             Découvrez notre gamme de super-aliments africains bio, une
-            alternative naturelle aux compléments alimentaires 💚
+            alternative naturelle aux compléments alimentaires
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

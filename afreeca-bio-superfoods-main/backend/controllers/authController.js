@@ -13,7 +13,7 @@ const sendTokenResponse = (user, statusCode, res) => {
   // Configuration des options du cookie (pour la sécurité)
   const options = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
+      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000,
     ), // Expiration du cookie
     httpOnly: true, // Rendre le cookie inaccessible via JavaScript côté client
   };
@@ -27,7 +27,8 @@ const sendTokenResponse = (user, statusCode, res) => {
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
     token,
-    data: user, // Renvoie les infos de l'utilisateur (sans le mdp car select: false)
+    user, // 💡 AJOUT : On double l'information pour le frontend qui cherche explicitement data.user
+    data: user, // Conserve la structure d'origine pour la compatibilité générale de l'API
   });
 };
 
