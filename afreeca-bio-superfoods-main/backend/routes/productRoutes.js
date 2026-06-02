@@ -1,3 +1,4 @@
+// backend/routes/productRoutes.js
 const express = require("express");
 const router = express.Router();
 const {
@@ -8,7 +9,7 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 
-// On garde les imports pour la suite, quand on réactivera la sécurité
+// 💡 IMPORT de la sécurité complète
 const { protect, authorize } = require("../middleware/authMiddleware");
 
 // --- ROUTES DES PRODUITS ---
@@ -16,14 +17,14 @@ const { protect, authorize } = require("../middleware/authMiddleware");
 // Route pour l'ensemble des produits
 router
   .route("/")
-  .get(getProducts) // Voir tous les produits (Gingembre, Moringa, etc.)
-  .post(createProduct); // Ajouter un nouveau super-aliment
+  .get(getProducts) // Public : Voir tous les produits
+  .post(protect, authorize("admin"), createProduct); // 🔒 Sécurisé : Ajouter
 
 // Route pour un produit spécifique via son ID
 router
   .route("/:id")
-  .get(getProductById) // Voir les détails d'un produit
-  .put(updateProduct) // Modifier un prix ou une description
-  .delete(deleteProduct); // Supprimer un produit du catalogue
+  .get(getProductById) // Public : Voir les détails d'un produit
+  .put(protect, authorize("admin"), updateProduct) // 🔒 Sécurisé : Modifier
+  .delete(protect, authorize("admin"), deleteProduct); // 🔒 Sécurisé : Supprimer
 
 module.exports = router;

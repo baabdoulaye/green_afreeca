@@ -43,11 +43,13 @@ exports.protect = async (req, res, next) => {
     });
   }
 };
-// backend/middleware/authMiddleware.js (Ajoute ceci)
-
 // Fonction pour vérifier le rôle de l'utilisateur (ex: doit être 'admin')
 exports.authorize = (...roles) => {
   return (req, res, next) => {
+    // backend/middleware/authMiddleware.js (Ajoute ceci)
+    console.log(
+      `🛡️ [SÉCURITÉ BACKEND] Tentative d'accès. Rôle détecté en BDD : ${req.user ? req.user.role : "aucun"}`,
+    );
     // Vérifie si le rôle de l'utilisateur (req.user.role) est inclus dans les rôles autorisés (roles)
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({

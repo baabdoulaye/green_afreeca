@@ -151,6 +151,8 @@ const Auth = () => {
         lastName: data.user?.lastName || data.lastName || "",
         email: data.user?.email || data.email || loginData.email,
         phone: data.user?.phone || data.phone || "",
+        // 💡 AJOUT CRUCIAL : On sauvegarde le grade de l'utilisateur !
+        role: data.user?.role || data.role || "client",
       };
 
       // On enregistre l'objet utilisateur pour la Navbar

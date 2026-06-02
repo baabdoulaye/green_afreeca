@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"; // 💡 À rajouter dans tes imports
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,34 +31,72 @@ import { cn } from "@/lib/utils";
 
 const Admin = () => {
   const { toast } = useToast();
+
+  const navigate = useNavigate(); // 💡 Initialisation du navigateur pour les redirections
+
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
   const [products, setProducts] = useState<any[]>([]);
+
   const [orders, setOrders] = useState<any[]>([]); // Nouvel état pour les commandes
+
   const [loading, setLoading] = useState(true);
+
   const [ordersLoading, setOrdersLoading] = useState(true);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const [editingProduct, setEditingProduct] = useState<any>(null);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
+
     price: "",
+
     category: "Jus",
+
     slug: "",
+
     description: "",
+
     stock: 0,
   });
 
   const [stats, setStats] = useState({
     totalProducts: 0,
+
     totalOrders: 0,
+
     totalUsers: 128,
+
     revenue: 0,
   });
 
   useEffect(() => {
-    fetchData();
-    fetchOrders(); // Chargement des commandes au montage
-  }, []);
+    const userInfoStr = localStorage.getItem("userInfo");
 
+    if (!userInfoStr) {
+      navigate("/auth");
+      return;
+    }
+
+    try {
+      const userInfo = JSON.parse(userInfoStr);
+      if (userInfo.role !== "admin") {
+        navigate("/");
+        return;
+      }
+
+      // 🛑 SUPPRIME LA LIGNE setIsAuthorized(true) ICI !
+      // On lance juste les requêtes dans l'ombre.
+      fetchData();
+      fetchOrders();
+    } catch (error) {
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("token");
+      navigate("/auth");
+    }
+  }, []);
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -70,12 +109,10 @@ const Admin = () => {
       setLoading(false);
     }
   };
-
   const fetchOrders = async () => {
     setOrdersLoading(true);
     const token = localStorage.getItem("token");
 
-    // Sécurité 1 : Si pas de token, on arrête tout de suite
     if (!token) {
       setOrders([]);
       setOrdersLoading(false);
@@ -87,37 +124,44 @@ const Admin = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      // 🚨 SI LE SERVEUR REFUSE (Le hacker est démasqué)
+      if (response.status === 401 || response.status === 403) {
+        toast({
+          title: "Bien tenté ! 🕵️‍♂️",
+          description: "La sécurité serveur a bloqué ton accès. Déconnexion.",
+          variant: "destructive",
+        });
+
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("token");
+
+        // 💥 HARD REDIRECT : On rafraîchit la page violemment pour purger la Navbar
+        window.location.href = "/auth";
+        return;
+      }
+
+      // 👑 SI LE SERVEUR ACCEPTE : C'est le vrai Admin ! On lève enfin le rideau visuel !
+      setIsAuthorized(true);
+
       const data = await response.json();
 
-      // Sécurité 2 : On vérifie si data est bien un tableau (Array)
       if (Array.isArray(data)) {
         setOrders(data);
-
-        // Calcul du revenu basé sur les commandes payées
         const totalRev = data.reduce(
           (acc: number, o: any) => acc + (o.isPaid ? o.totalPrice : 0),
           0,
         );
-
         setStats((prev) => ({
           ...prev,
           totalOrders: data.length,
           revenue: totalRev,
         }));
       } else {
-        // Si le serveur renvoie une erreur (ex: 401), on vide les stats proprement
-        console.warn("Réponse API invalide (pas un tableau) :", data);
         setOrders([]);
-        setStats((prev) => ({ ...prev, totalOrders: 0, revenue: 0 }));
       }
     } catch (error) {
       console.error("Erreur fetch orders:", error);
-      setOrders([]); // Évite le crash au rendu
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les commandes",
-        variant: "destructive",
-      });
+      setOrders([]);
     } finally {
       setOrdersLoading(false);
     }
@@ -243,6 +287,17 @@ const Admin = () => {
     setIsDialogOpen(true);
   };
 
+  // 🛑 BINGO ! C'EST ICI QU'IL FAUT LE CALER 🛑
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse text-[#22c55e] font-bold text-xl tracking-widest uppercase">
+          Vérification des accès sécurisés...
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-left">
       <div className="bg-gradient-to-r from-green-50 to-white py-8 mb-8 border-b">
@@ -251,7 +306,7 @@ const Admin = () => {
             Dashboard Admin
           </h1>
           <p className="text-muted-foreground">
-            Gestion de Green Afreeca — Version Centralisée 🔌
+            Gestion de Green Afreeca — Version Centralisée du QG
           </p>
         </div>
       </div>
