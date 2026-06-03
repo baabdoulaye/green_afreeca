@@ -182,23 +182,43 @@ const Auth = () => {
   // Gérer la réinitialisation (Simulation)
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!resetEmail) {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/auth/forgotpassword",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: resetEmail }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResetSent(true); // Affiche le message de succès dans la modale
+        toast({
+          title: "Email envoyé 📧",
+          description:
+            "Vérifiez votre boîte de réception pour réinitialiser votre mot de passe.",
+        });
+      } else {
+        toast({
+          title: "Erreur",
+          description: data.error || "Une erreur est survenue.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Erreur",
-        description: "Veuillez entrer votre adresse email",
+        title: "Erreur réseau",
+        description: "Impossible de contacter le serveur.",
         variant: "destructive",
       });
-      return;
-    }
-    setIsLoading(true);
-    setTimeout(() => {
-      setResetSent(true);
+    } finally {
       setIsLoading(false);
-      toast({
-        title: "Email envoyé !",
-        description: "Vérifiez votre boîte de réception",
-      });
-    }, 1500);
+    }
   };
 
   const closeForgotPassword = () => {
@@ -488,7 +508,7 @@ const Auth = () => {
             <DialogTitle>Mot de passe oublié</DialogTitle>
             <DialogDescription>
               {resetSent
-                ? "Un email a été envoyé."
+                ? "Si cet email existe dans notre base, un lien de réinitialisation vous a été envoyé."
                 : "Entrez votre email pour recevoir un lien."}
             </DialogDescription>
           </DialogHeader>

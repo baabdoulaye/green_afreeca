@@ -21,6 +21,7 @@ import LegalNotice from "./pages/LegalNotice";
 import Privacy from "./pages/Privacy";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import ResetPassword from "./pages/ResetPassword"; // Ajuste le chemin selon ton dossier
 // import AdminOrders from "./pages/AdminOrders";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,10 @@ const App = () => (
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/cgv" element={<Terms />} />
                 <Route path="/mentions-legales" element={<LegalNotice />} />
+                <Route
+                  path="/resetpassword/:resettoken"
+                  element={<ResetPassword />}
+                />
                 {/* <Route path="/admin/orders" element={<AdminOrders />} /> */}
 
                 <Route

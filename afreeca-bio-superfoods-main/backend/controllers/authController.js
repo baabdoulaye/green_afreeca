@@ -2,6 +2,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs"); // Déjà importé dans User.js mais bon pour la clarté
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const sendEmail = require("../utils/sendEmail");
 
 // ----------------------------------------------------
 // Fonction utilitaire pour générer le token (déjà dans User.js)
@@ -93,6 +95,92 @@ exports.login = async (req, res) => {
         .json({ success: false, error: "Identifiants invalides." });
     }
 
+    sendTokenResponse(user, 200, res);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// @desc    Mot de passe oublié (Envoi du mail)
+// @route   POST /api/auth/forgotpassword
+// @access  Public
+exports.forgotPassword = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "Aucun utilisateur trouvé avec cet email",
+      });
+    }
+
+    // Obtenir le jeton de réinitialisation
+    const resetToken = user.getResetPasswordToken();
+    await user.save({ validateBeforeSave: false }); // On sauvegarde le token en BDD
+
+    // Créer l'URL de réinitialisation pointant vers le Frontend (React)
+    const resetUrl = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+
+    const message = `Vous recevez cet email car vous avez demandé la réinitialisation de votre mot de passe pour Green Afreeca.\n\nMerci de cliquer sur ce lien pour choisir un nouveau mot de passe : \n\n ${resetUrl}`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Réinitialisation du mot de passe - Green Afreeca",
+        message,
+      });
+
+      res.status(200).json({ success: true, data: "Email envoyé" });
+    } catch (err) {
+      console.error(err);
+      // Si l'envoi échoue, on efface le token en BDD par sécurité
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return res
+        .status(500)
+        .json({ success: false, error: "L'email n'a pas pu être envoyé" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// @desc    Réinitialiser le mot de passe
+// @route   PUT /api/auth/resetpassword/:resettoken
+// @access  Public
+exports.resetPassword = async (req, res) => {
+  try {
+    // 1. Recréer le hachage du token envoyé dans l'URL pour le comparer avec la BDD
+    const resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(req.params.resettoken)
+      .digest("hex");
+
+    // 2. Chercher l'utilisateur avec ce token ET vérifier que le token n'est pas expiré
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Jeton invalide ou expiré" });
+    }
+
+    // 3. Définir le nouveau mot de passe
+    user.password = req.body.password;
+
+    // 4. Nettoyer les champs de réinitialisation
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    // 5. Connecter l'utilisateur automatiquement après le changement
     sendTokenResponse(user, 200, res);
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
