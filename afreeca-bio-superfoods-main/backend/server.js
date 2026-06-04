@@ -3,14 +3,15 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
-const path = require("path"); // 💡 Import indispensable pour gérer les chemins absolus
-const fs = require("fs"); // 💡 Import pour la route de debug
+const path = require("path");
+const fs = require("fs");
 require("dotenv").config();
 
-// Import des routes
+// 💡 1. Import de TOUTES les routes en haut
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const stripeRoutes = require("./routes/stripeRoutes"); // <-- L'import Stripe est ici !
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,12 +21,11 @@ const PORT = process.env.PORT || 3000;
 // ----------------------------------------------------
 app.use(
   cors({
-    origin: "http://localhost:8080", // L'adresse de ton Front-end (Vite)
-    credentials: true, // Permet l'échange de cookies/tokens entre front et back
+    origin: "http://localhost:8080",
+    credentials: true,
   }),
 );
 
-// 💡 AJOUT SÉCURITÉ IMAGES : Autorise le navigateur (port 8080) à afficher les ressources du backend (port 3000)
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
   next();
@@ -36,10 +36,6 @@ app.use((req, res, next) => {
 // ----------------------------------------------------
 app.use(express.json());
 app.use(cookieParser());
-
-// 💡 CONFIGURATION DES FICHIERS STATIQUES
-// Maintenant que le sous-dossier 'images' est dans 'backend/public',
-// cette seule ligne suffit pour servir /placeholder.png ET /images/bissap.jpg
 app.use(express.static(path.join(__dirname, "public")));
 
 // ----------------------------------------------------
@@ -56,9 +52,11 @@ mongoose
 // ----------------------------------------------------
 // 🚀 ROUTES DE L'API
 // ----------------------------------------------------
+// 💡 2. Déclaration de TOUTES les routes au même endroit
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/stripe", stripeRoutes); // <-- La route Stripe est branchée ici !
 
 // Route de test
 app.get("/", (req, res) => {
@@ -66,26 +64,22 @@ app.get("/", (req, res) => {
 });
 
 // ----------------------------------------------------
-// 🕵️‍♂️ ROUTE DEBUG : POUR VOIR CE QUE NODE.JS VOIT REELLEMENT
+// 🕵️‍♂️ ROUTE DEBUG
 // ----------------------------------------------------
 app.get("/api/debug/images", (req, res) => {
   const publicPath = path.join(__dirname, "public");
   try {
-    // On vérifie la racine du dossier public
     const files = fs.readdirSync(publicPath);
-
-    // On essaie aussi de lire le sous-dossier images s'il existe
     let imagesFiles = [];
     const imagesPath = path.join(publicPath, "images");
     if (fs.existsSync(imagesPath)) {
       imagesFiles = fs.readdirSync(imagesPath);
     }
-
     res.json({
       message: "Dossier trouvé !",
       chemin_absolu: publicPath,
       contenu_racine: files,
-      contenu_dossier_images: imagesFiles, // Te listera tes images (bissap, moringa...)
+      contenu_dossier_images: imagesFiles,
     });
   } catch (e) {
     res.status(500).json({
@@ -97,7 +91,7 @@ app.get("/api/debug/images", (req, res) => {
 });
 
 // ----------------------------------------------------
-// 📡 DÉMARRAGE DU SERVEUR
+// 📡 DÉMARRAGE DU SERVEUR (TOUJOURS À LA FIN !)
 // ----------------------------------------------------
 app.listen(PORT, () => {
   console.log(`📡 Serveur démarré sur : http://localhost:${PORT}`);

@@ -92,12 +92,7 @@ const Checkout = () => {
   // FONCTION CRUCIALE MISE À JOUR
   const submitOrder = async () => {
     setIsSubmitting(true);
-
-    // 1. Récupération propre du token
     const token = localStorage.getItem("token");
-
-    // DEBUG : On vérifie ce qu'on envoie
-    console.log("Tentative d'envoi avec le token :", token);
 
     if (!token) {
       toast({
@@ -111,11 +106,12 @@ const Checkout = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/orders", {
+      // 1️⃣ ON CRÉE LA COMMANDE DANS TA BDD MONGO
+      const orderResponse = await fetch("http://localhost:3000/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token.trim()}`, // On nettoie les espaces éventuels
+          Authorization: `Bearer ${token.trim()}`,
         },
         body: JSON.stringify({
           items: items.map((item) => ({
@@ -132,27 +128,43 @@ const Checkout = () => {
             zipCode: shippingInfo.postalCode,
             country: shippingInfo.country,
           },
-          status: "processing",
+          status: "En attente de paiement", // On change le statut !
         }),
       });
 
-      const data = await response.json();
+      const orderData = await orderResponse.json();
 
-      if (response.status === 401) {
-        throw new Error("Le serveur dit : Session expirée. Reconnecte-toi !");
+      if (!orderResponse.ok) {
+        throw new Error(
+          orderData.message || "Erreur lors de la création de la commande",
+        );
       }
 
-      if (!response.ok)
-        throw new Error(
-          data.message || "Erreur lors de la création de la commande",
-        );
+      // 2️⃣ ON DEMANDE LE LIEN DE PAIEMENT À STRIPE
+      const stripeResponse = await fetch(
+        "http://localhost:3000/api/stripe/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token.trim()}`,
+          },
+          body: JSON.stringify({
+            items: items,
+            email: shippingInfo.email,
+            orderId: orderData._id || orderData.data._id, // On passe l'ID de la commande créée
+          }),
+        },
+      );
 
-      setCurrentStep(4);
-      clearCart();
-      toast({
-        title: "Commande validée ! 🎉",
-        description: "Elle est enregistrée dans ton historique.",
-      });
+      const stripeData = await stripeResponse.json();
+
+      if (!stripeResponse.ok) {
+        throw new Error("Erreur avec le service de paiement Stripe");
+      }
+
+      // 3️⃣ REDIRECTION VERS LA PAGE SÉCURISÉE STRIPE
+      window.location.href = stripeData.url;
     } catch (error: any) {
       console.error("ERREUR CHECKOUT :", error.message);
       toast({
@@ -160,7 +172,6 @@ const Checkout = () => {
         description: error.message,
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -325,18 +336,26 @@ const Checkout = () => {
 
             {currentStep === 3 && (
               <Card className="p-6 animate-fade-in text-center py-12">
-                <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
+                <Shield className="h-16 w-16 text-[#22c55e] mx-auto mb-4" />
                 <h2 className="text-2xl font-bold mb-2">Paiement Sécurisé</h2>
                 <p className="text-muted-foreground mb-6">
-                  Prêt à valider ta commande de {total.toFixed(2)}€ ?
-                </p>
-                <div className="max-w-xs mx-auto p-4 border rounded-xl bg-gray-50 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <CreditCard /> <span>•••• 4242</span>
-                  </div>
-                  <span className="text-xs font-bold text-primary">
-                    TEST MODE
+                  Vous allez être redirigé vers la plateforme sécurisée de notre
+                  partenaire bancaire pour régler votre commande de{" "}
+                  <span className="font-bold text-black">
+                    {total.toFixed(2)}€
                   </span>
+                  .
+                </p>
+                <div className="max-w-xs mx-auto p-4 border rounded-xl bg-gray-50 flex flex-col items-center justify-center gap-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Lock className="h-4 w-4" />
+                    <span>Vos données sont chiffrées</span>
+                  </div>
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                    alt="Paiement par Stripe"
+                    className="h-8 opacity-80"
+                  />
                 </div>
               </Card>
             )}

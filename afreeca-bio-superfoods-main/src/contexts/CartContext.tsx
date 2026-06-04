@@ -9,6 +9,7 @@ import {
   useState,
   ReactNode,
   useEffect,
+  useCallback, // 💡 NOUVEL IMPORT
 } from "react";
 import { toast } from "sonner";
 
@@ -87,10 +88,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setItems([]);
     toast.info("Panier vidé");
-  };
+  }, []); // Les crochets vides signifient : "ne recrée JAMAIS cette fonction"
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = items.reduce(
