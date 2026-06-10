@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import ReCAPTCHA from "react-google-recaptcha";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,8 @@ const Auth = () => {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null); // 💡 L'état du Captcha
 
   // Formulaire d'inscription
   const [signupData, setSignupData] = useState({
@@ -54,9 +57,22 @@ const Auth = () => {
   });
 
   // Gérer l'inscription Réelle
+  // Gérer l'inscription Réelle
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // 💡 1. Vérification RGPD (La fameuse Checkbox)
+    if (!acceptTerms) {
+      toast({
+        title: "Mentions légales",
+        description:
+          "Vous devez accepter les conditions générales et la politique de confidentialité.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // 2. Vérification de la correspondance des mots de passe
     if (signupData.password !== signupData.confirmPassword) {
       toast({
         title: "Erreur",
@@ -66,10 +82,21 @@ const Auth = () => {
       return;
     }
 
-    if (signupData.password.length < 6) {
+    // 3. Vérification de la longueur (passé à 8 caractères pour la sécurité !)
+    if (signupData.password.length < 8) {
       toast({
-        title: "Erreur",
-        description: "Le mot de passe doit contenir au moins 6 caractères",
+        title: "Erreur de sécurité",
+        description: "Le mot de passe doit contenir au moins 8 caractères",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // 💡 VÉRIFICATION DU CAPTCHA
+    if (!captchaToken) {
+      toast({
+        title: "Sécurité anti-robot 🤖",
+        description: "Veuillez cocher la case 'Je ne suis pas un robot'.",
         variant: "destructive",
       });
       return;
@@ -163,7 +190,7 @@ const Auth = () => {
 
       toast({
         title: "Vous etes connecté",
-        description: `Ravi de vous revoir ${firstName} !`,
+        description: `Bienvenue ${firstName} ! Ravi de vous compter parmi nous.`,
       });
 
       // Redirection vers l'accueil pour fêter ça
@@ -479,6 +506,23 @@ const Auth = () => {
                     </div>
                   </div>
 
+                  {/* ... Ta fameuse checkbox des CGV ... */}
+
+                  {/* 💡 LE COMPOSANT RECAPTCHA */}
+                  <div className="flex justify-center my-4">
+                    <ReCAPTCHA
+                      sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                      onChange={(token) => setCaptchaToken(token)}
+                    />
+                  </div>
+
+                  {/* <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                    disabled={isLoading}
+                  ></Button> */}
+
                   <Button
                     type="submit"
                     size="lg"
@@ -488,12 +532,33 @@ const Auth = () => {
                     {isLoading ? "Création..." : "Créer mon compte"}
                   </Button>
 
-                  <p className="text-xs text-muted-foreground text-center">
-                    En créant un compte, vous acceptez nos{" "}
-                    <Link to="/cgv" className="text-primary hover:underline">
-                      conditions générales
-                    </Link>
-                  </p>
+                  <div className="flex items-start space-x-2 mt-4">
+                    <input
+                      type="checkbox"
+                      id="terms"
+                      checked={acceptTerms}
+                      onChange={(e) => setAcceptTerms(e.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    />
+                    <Label
+                      htmlFor="terms"
+                      className="text-xs text-muted-foreground leading-snug"
+                    >
+                      J'accepte les{" "}
+                      <Link to="/cgv" className="text-primary hover:underline">
+                        conditions générales de vente
+                      </Link>{" "}
+                      et je consens au traitement de mes données personnelles
+                      conformément à la{" "}
+                      <Link
+                        to="/politique-confidentialite"
+                        className="text-primary hover:underline"
+                      >
+                        politique de confidentialité (RGPD)
+                      </Link>
+                      .
+                    </Label>
+                  </div>
                 </form>
               </TabsContent>
             </Tabs>

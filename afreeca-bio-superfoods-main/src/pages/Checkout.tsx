@@ -56,7 +56,22 @@ const Checkout = () => {
     };
   });
 
+  // 💡 VÉRIFICATION DE L'AUTHENTIFICATION AU CHARGEMENT DE LA PAGE
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    // S'il n'y a pas de token, on le renvoie vers la page d'inscription/connexion
+    if (!token) {
+      toast({
+        title: "Authentification requise 🔒",
+        description:
+          "Veuillez vous connecter ou créer un compte pour valider votre panier.",
+      });
+      navigate("/auth");
+      return; // On arrête l'exécution ici
+    }
+
+    // S'il est connecté, on pré-remplit ses informations comme avant
     const savedUser = localStorage.getItem("userInfo");
     if (savedUser) {
       const user = JSON.parse(savedUser);
@@ -68,7 +83,7 @@ const Checkout = () => {
         phone: user.phone || "",
       }));
     }
-  }, []);
+  }, [navigate, toast]);
 
   const shipping = totalPrice > 30 ? 0 : 4.99;
   const total = totalPrice + shipping;

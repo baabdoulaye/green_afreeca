@@ -23,6 +23,14 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    // 💡 NOUVEAU CHAMP : Mode d'emploi modifiable depuis l'Admin
+    usage: {
+      type: String,
+      default:
+        "À consommer selon vos envies. Conserver dans un endroit propre et sec.",
+    },
+
     // Par exemple, 'Le jus de Bouille est 6x plus riche en Vitamine C'
     marketing_claim: {
       type: String,
@@ -69,7 +77,7 @@ const ProductSchema = new mongoose.Schema(
       default: 0, // Nombre total d'avis
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 ); // Ajoute automatiquement createdAt et updatedAt
 
 module.exports = mongoose.model("Product", ProductSchema);

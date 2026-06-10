@@ -12,6 +12,7 @@ const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const stripeRoutes = require("./routes/stripeRoutes"); // <-- L'import Stripe est ici !
+const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -57,6 +58,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/stripe", stripeRoutes); // <-- La route Stripe est branchée ici !
+app.use("/api/contact", contactRoutes);
 
 // Route de test
 app.get("/", (req, res) => {

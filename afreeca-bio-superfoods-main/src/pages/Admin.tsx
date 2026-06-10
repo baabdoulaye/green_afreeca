@@ -1,9 +1,10 @@
-import { useNavigate } from "react-router-dom"; // 💡 À rajouter dans tes imports
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Package,
   ShoppingCart,
@@ -19,9 +20,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,50 +30,36 @@ import { cn } from "@/lib/utils";
 
 const Admin = () => {
   const { toast } = useToast();
-
-  const navigate = useNavigate(); // 💡 Initialisation du navigateur pour les redirections
+  const navigate = useNavigate();
 
   const [isAuthorized, setIsAuthorized] = useState(false);
-
   const [products, setProducts] = useState<any[]>([]);
-
-  const [orders, setOrders] = useState<any[]>([]); // Nouvel état pour les commandes
-
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
   const [ordersLoading, setOrdersLoading] = useState(true);
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   const [editingProduct, setEditingProduct] = useState<any>(null);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
-
     price: "",
-
     category: "Jus",
-
     slug: "",
-
     description: "",
-
+    usage: "",
+    image_url: "", // 💡 Le nouveau champ magique pour l'image
     stock: 0,
   });
 
   const [stats, setStats] = useState({
     totalProducts: 0,
-
     totalOrders: 0,
-
     totalUsers: 128,
-
     revenue: 0,
   });
 
   useEffect(() => {
     const userInfoStr = localStorage.getItem("userInfo");
-
     if (!userInfoStr) {
       navigate("/auth");
       return;
@@ -86,9 +71,6 @@ const Admin = () => {
         navigate("/");
         return;
       }
-
-      // 🛑 SUPPRIME LA LIGNE setIsAuthorized(true) ICI !
-      // On lance juste les requêtes dans l'ombre.
       fetchData();
       fetchOrders();
     } catch (error) {
@@ -97,6 +79,7 @@ const Admin = () => {
       navigate("/auth");
     }
   }, []);
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -109,6 +92,7 @@ const Admin = () => {
       setLoading(false);
     }
   };
+
   const fetchOrders = async () => {
     setOrdersLoading(true);
     const token = localStorage.getItem("token");
@@ -124,25 +108,19 @@ const Admin = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // 🚨 SI LE SERVEUR REFUSE (Le hacker est démasqué)
       if (response.status === 401 || response.status === 403) {
         toast({
           title: "Bien tenté ! 🕵️‍♂️",
           description: "La sécurité serveur a bloqué ton accès. Déconnexion.",
           variant: "destructive",
         });
-
         localStorage.removeItem("userInfo");
         localStorage.removeItem("token");
-
-        // 💥 HARD REDIRECT : On rafraîchit la page violemment pour purger la Navbar
         window.location.href = "/auth";
         return;
       }
 
-      // 👑 SI LE SERVEUR ACCEPTE : C'est le vrai Admin ! On lève enfin le rideau visuel !
       setIsAuthorized(true);
-
       const data = await response.json();
 
       if (Array.isArray(data)) {
@@ -182,7 +160,7 @@ const Admin = () => {
           title: "Succès ✅",
           description: "Commande marquée comme livrée !",
         });
-        fetchOrders(); // Rafraîchissement automatique
+        fetchOrders();
       }
     } catch (error) {
       toast({
@@ -196,33 +174,30 @@ const Admin = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. On prépare l'objet avec le champ 'stock' (converti en nombre)
     const productData = {
       name: newProduct.name,
       price: parseFloat(newProduct.price.toString().replace(",", ".")),
-      stock: parseInt(newProduct.stock.toString() || "0"), // Ajout du stock ici
+      stock: parseInt(newProduct.stock.toString() || "0"),
       category: newProduct.category,
-      // Sécurité : si le slug est vide, on en génère un à partir du nom
       slug:
         newProduct.slug ||
         newProduct.name.toLowerCase().trim().replace(/\s+/g, "-"),
-      // Sécurité : description par défaut si vide
       description:
         newProduct.description ||
         `Délicieux ${newProduct.name} de Green Afreeca.`,
-      image_url: "/placeholder.png", // Valeur par défaut pour éviter l'erreur backend
+      usage: newProduct.usage || "À consommer selon vos envies.",
+      // 💡 On récupère le lien de l'image, sinon on met le placeholder
+      image_url: newProduct.image_url || "/placeholder.png",
     };
 
     try {
       if (editingProduct) {
-        // MODE EDITION
         await productService.updateProduct(editingProduct._id, productData);
         toast({
           title: "Produit mis à jour ! 🔄",
-          description: `${productData.name} a été modifié avec un stock de ${productData.stock}.`,
+          description: `${productData.name} a été modifié`,
         });
       } else {
-        // MODE CREATION
         await productService.createProduct(productData);
         toast({
           title: "Produit créé ! 🌿",
@@ -230,7 +205,6 @@ const Admin = () => {
         });
       }
 
-      // 2. On ferme et on reset tout proprement
       setIsDialogOpen(false);
       setEditingProduct(null);
       setNewProduct({
@@ -239,10 +213,11 @@ const Admin = () => {
         category: "Jus",
         slug: "",
         description: "",
-        stock: 0, // On reset aussi le stock en string pour l'input
+        usage: "",
+        image_url: "", // On vide le champ image
+        stock: 0,
       });
 
-      // 3. On rafraîchit la liste pour voir les changements
       fetchData();
     } catch (error) {
       console.error("Erreur lors de l'envoi:", error);
@@ -282,12 +257,13 @@ const Admin = () => {
       category: product.category,
       slug: product.slug,
       description: product.description || "",
+      usage: product.usage || "",
+      image_url: product.image_url || "", // 💡 On charge l'image existante
       stock: product.stock,
     });
     setIsDialogOpen(true);
   };
 
-  // 🛑 BINGO ! C'EST ICI QU'IL FAUT LE CALER 🛑
   if (!isAuthorized) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -373,10 +349,12 @@ const Admin = () => {
                       <Plus className="h-4 w-4" /> Ajouter
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px] rounded-3xl">
+                  <DialogContent className="sm:max-w-[425px] rounded-3xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="text-[#22c55e]">
-                        Nouveau Produit
+                        {editingProduct
+                          ? "Modifier Produit"
+                          : "Nouveau Produit"}
                       </DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -449,6 +427,38 @@ const Admin = () => {
                         </select>
                       </div>
 
+                      {/* 💡 LE CHAMP POUR L'URL DE L'IMAGE */}
+                      <div className="space-y-2 text-left">
+                        <Label htmlFor="image_url">URL de l'image</Label>
+                        <Input
+                          id="image_url"
+                          type="text"
+                          placeholder="ex: https://... ou /images/..."
+                          value={newProduct.image_url}
+                          onChange={(e) =>
+                            setNewProduct({
+                              ...newProduct,
+                              image_url: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="space-y-2 text-left">
+                        <Label htmlFor="usage">Mode d'emploi (Optionnel)</Label>
+                        <Textarea
+                          id="usage"
+                          placeholder="Ex: 1 cuillère à café le matin..."
+                          value={newProduct.usage}
+                          onChange={(e) =>
+                            setNewProduct({
+                              ...newProduct,
+                              usage: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
                       <Button
                         type="submit"
                         className="w-full bg-[#22c55e] hover:bg-[#16a34a] mt-4"
@@ -473,8 +483,13 @@ const Admin = () => {
                     >
                       <div className="flex items-center gap-4">
                         <div className="h-14 w-14 rounded-xl bg-gray-100 overflow-hidden border shrink-0">
+                          {/* 💡 GESTION INTELLIGENTE DU LIEN DE L'IMAGE */}
                           <img
-                            src={`http://localhost:3000${p.image_url}`}
+                            src={
+                              p.image_url?.startsWith("http")
+                                ? p.image_url
+                                : `http://localhost:3000${p.image_url}`
+                            }
                             className="w-full h-full object-cover"
                             alt={p.name}
                             onError={(e) => {
@@ -491,17 +506,15 @@ const Admin = () => {
                             <p className="text-sm font-medium text-[#22c55e] uppercase tracking-wider">
                               {p.category} — {p.price.toFixed(2)}€
                             </p>
-
-                            {/* BADGE DE STOCK DYNAMIQUE */}
                             <Badge
                               variant="outline"
                               className={cn(
                                 "text-[10px] px-2 py-0 h-5 border-none font-semibold w-fit",
                                 p.stock <= 0
-                                  ? "bg-red-100 text-red-700 animate-pulse" // Rouge clignotant si rupture
+                                  ? "bg-red-100 text-red-700 animate-pulse"
                                   : p.stock <= 10
-                                    ? "bg-orange-100 text-orange-700" // Orange si stock faible
-                                    : "bg-green-100 text-green-700", // Vert si tout est OK
+                                    ? "bg-orange-100 text-orange-700"
+                                    : "bg-green-100 text-green-700",
                               )}
                             >
                               {p.stock <= 0
@@ -555,7 +568,6 @@ const Admin = () => {
                 </div>
               ) : (
                 <div className="space-y-4 text-left">
-                  {/* On vérifie si "orders" est bien une liste et s'il y a des commandes dedans */}
                   {Array.isArray(orders) && orders.length > 0 ? (
                     orders.map((order) => (
                       <div
@@ -567,7 +579,6 @@ const Admin = () => {
                             <div className="flex items-center gap-2">
                               <User className="h-4 w-4 text-[#22c55e]" />
                               <span className="font-bold text-gray-900">
-                                {/* Sécurité : affiche "Client" si le nom est introuvable */}
                                 {order.user?.firstName || "Client"}{" "}
                                 {order.user?.lastName || ""}
                               </span>
@@ -582,16 +593,12 @@ const Admin = () => {
                                 {order.isDelivered ? "LIVRÉ" : "EN ATTENTE"}
                               </Badge>
                             </div>
-
-                            {/* Adresse de livraison sécurisée */}
                             <p className="text-sm text-muted-foreground italic">
                               📍{" "}
                               {order.shippingAddress?.street ||
                                 "Adresse non renseignée"}
                               , {order.shippingAddress?.city || ""}
                             </p>
-
-                            {/* Liste des articles achetés */}
                             <div className="text-xs text-gray-500 pt-1 bg-gray-50 p-2 rounded-lg">
                               {order.orderItems?.map((item: any, i: number) => (
                                 <span key={i}>
@@ -601,17 +608,13 @@ const Admin = () => {
                               ))}
                             </div>
                           </div>
-
                           <div className="flex flex-col items-end justify-between gap-3">
                             <span className="text-xl font-bold text-[#22c55e]">
-                              {/* Sécurité sur le prix */}
                               {order.totalPrice
                                 ? Number(order.totalPrice).toFixed(2)
                                 : "0.00"}{" "}
                               €
                             </span>
-
-                            {/* Bouton pour livrer - ne s'affiche que si pas encore livré */}
                             {!order.isDelivered && (
                               <Button
                                 size="sm"
@@ -631,7 +634,6 @@ const Admin = () => {
                       </div>
                     ))
                   ) : (
-                    /* Ce qui s'affiche si la liste est vide ou si tu n'es pas connecté */
                     <div className="p-20 text-center border-2 border-dashed rounded-3xl bg-gray-50/50">
                       <ShoppingCart className="h-12 w-12 text-gray-200 mx-auto mb-4" />
                       <p className="text-gray-400 font-medium">

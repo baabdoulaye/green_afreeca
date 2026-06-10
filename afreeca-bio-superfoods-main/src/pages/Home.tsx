@@ -12,6 +12,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import productService from "@/services/productService";
 import {
   Leaf,
   Award,
@@ -74,6 +76,26 @@ const reviews = [
 ];
 
 const Home = () => {
+  // 💡 On crée un état pour stocker nos 4 produits phares
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        setProductsLoading(true);
+        const data = await productService.getProducts();
+        // 🎯 On prend uniquement les 4 premiers produits de la BDD
+        setFeaturedProducts(data.slice(0, 4) || []);
+      } catch (error) {
+        console.error("Erreur chargement produits accueil:", error);
+      } finally {
+        setProductsLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Section Hero */}
@@ -214,141 +236,56 @@ const Home = () => {
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Produit 1 - Jus de Bouille/Baobab */}
-            <div className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 animate-scale-in">
-              <Link
-                to="/produits/baobab"
-                className="aspect-square overflow-hidden block cursor-pointer"
-              >
-                <img
-                  src="/images/baobab-poudre.jpg"
-                  alt="Jus de Bouille - Baobab"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-              </Link>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-foreground">
-                  Jus de Bouille (Baobab)
-                </h3>
-                <p className="text-muted-foreground mb-4 text-sm">
-                  6x plus de Vitamine C que l'orange. Boost immunitaire naturel.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-primary">
-                    À partir de 3€
-                  </span>
-                  <Link to="/produits/baobab">
-                    <Button size="sm" variant="default">
-                      Voir plus
-                    </Button>
-                  </Link>
-                </div>
+            {productsLoading ? (
+              <div className="col-span-full text-center py-10 italic text-muted-foreground animate-pulse">
+                Chargement de la sélection...
               </div>
-            </div>
-
-            {/* Produit 2 - Jus de Bissap */}
-            <div
-              className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 animate-scale-in"
-              style={{ animationDelay: "0.1s" }}
-            >
-              <Link
-                to="/produits/bissap"
-                className="aspect-square overflow-hidden block cursor-pointer"
-              >
-                <img
-                  src="/images/bissap.jpg"
-                  alt="Jus de Bissap - Hibiscus"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-              </Link>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-foreground">
-                  Jus de Bissap
-                </h3>
-                <p className="text-muted-foreground mb-4 text-sm">
-                  Riche en antioxydants. Régule la pression artérielle
-                  naturellement.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-primary">
-                    À partir de 3€
-                  </span>
-                  <Link to="/produits/bissap">
-                    <Button size="sm" variant="default">
-                      Voir plus
-                    </Button>
+            ) : (
+              featuredProducts.map((p, index) => (
+                <div
+                  key={p._id}
+                  className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 animate-scale-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <Link
+                    to={`/produits/${p.slug || p._id}`}
+                    className="aspect-square overflow-hidden block cursor-pointer"
+                  >
+                    <img
+                      src={
+                        p.image_url?.startsWith("http")
+                          ? p.image_url
+                          : `http://localhost:3000${p.image_url}`
+                      }
+                      alt={p.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "https://placehold.co/600x400/e2e8f0/475569?text=Green+Afreeca";
+                      }}
+                    />
                   </Link>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold mb-2 text-foreground leading-tight">
+                      {p.name}
+                    </h3>
+                    <p className="text-muted-foreground mb-4 text-sm line-clamp-2">
+                      {p.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-primary">
+                        {p.price.toFixed(2)}€
+                      </span>
+                      <Link to={`/produits/${p.slug || p._id}`}>
+                        <Button size="sm" variant="default">
+                          Voir plus
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Produit 3 - Moringa */}
-            <div
-              className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 animate-scale-in"
-              style={{ animationDelay: "0.2s" }}
-            >
-              <Link
-                to="/produits/moringa"
-                className="aspect-square overflow-hidden block cursor-pointer"
-              >
-                <img
-                  src="/images/moringa.jpg"
-                  alt="Moringa"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-              </Link>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-foreground">
-                  Moringa
-                </h3>
-                <p className="text-muted-foreground mb-4 text-sm">
-                  L'arbre miracle. Contient les 9 acides aminés essentiels.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-primary">7,00€</span>
-                  <Link to="/produits/moringa">
-                    <Button size="sm" variant="default">
-                      Voir plus
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Produit 4 - Jus de Gingembre */}
-            <div
-              className="group bg-card rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 animate-scale-in"
-              style={{ animationDelay: "0.3s" }}
-            >
-              <Link
-                to="/produits/ginger"
-                className="aspect-square overflow-hidden block cursor-pointer"
-              >
-                <img
-                  src="/images/ginger-poudre.jpg"
-                  alt="Jus de Gingembre"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-              </Link>
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-foreground">
-                  Jus de Gingembre
-                </h3>
-                <p className="text-muted-foreground mb-4 text-sm">
-                  Anti-inflammatoire naturel. Améliore la digestion.
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-primary">
-                    À partir de 4€
-                  </span>
-                  <Link to="/produits/ginger">
-                    <Button size="sm" variant="default">
-                      Voir plus
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
+              ))
+            )}
           </div>
 
           <div className="text-center mt-12">

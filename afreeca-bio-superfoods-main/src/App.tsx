@@ -23,6 +23,7 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import ResetPassword from "./pages/ResetPassword";
 import Success from "./pages/Success";
+import CookieBanner from "@/components/CookieBanner";
 // import AdminOrders from "./pages/AdminOrders";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,10 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
+
+            {/* 💡 C'est ici qu'on place le CookieBanner ! Juste entre <main> et <Footer> */}
+            <CookieBanner />
+
             <Footer />
           </div>
         </BrowserRouter>

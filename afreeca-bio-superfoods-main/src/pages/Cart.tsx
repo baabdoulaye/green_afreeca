@@ -19,8 +19,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast"; // Ou de "sonner" selon ce que tu utilises ici
 
 const Cart = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const { items, updateQuantity, removeFromCart, totalPrice } = useCart();
 
   // Calculer les frais de livraison (gratuite à partir de 30€)
@@ -237,10 +241,10 @@ const Cart = () => {
                     <Truck className="h-4 w-4 text-primary" />
                     <span>Livraison rapide en 48-72h </span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <CreditCard className="h-4 w-4 text-primary" />
                     <span>CB, PayPal, Apple Pay acceptés </span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </Card>

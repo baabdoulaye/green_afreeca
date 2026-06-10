@@ -4,7 +4,15 @@
  * Dynamique : affiche le prénom et un menu de déconnexion si connecté
  */
 
-import { ShoppingCart, User, Menu, X, LogOut, ChevronDown } from "lucide-react";
+import {
+  ShoppingCart,
+  User,
+  Menu,
+  X,
+  LogOut,
+  ChevronDown,
+  Settings,
+} from "lucide-react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -13,7 +21,10 @@ import { useToast } from "@/hooks/use-toast";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState<{ firstName: string } | null>(null);
+  // 💡 On précise à TypeScript que l'utilisateur peut avoir un "role"
+  const [user, setUser] = useState<{ firstName: string; role?: string } | null>(
+    null,
+  );
   const { totalItems } = useCart();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -41,13 +52,25 @@ const Navbar = () => {
 
   // Fonction de déconnexion
   const handleLogout = () => {
+    // 1. On vide intégralement le disque dur du navigateur
     localStorage.removeItem("userInfo");
+    localStorage.removeItem("token");
+    localStorage.removeItem("greenafreeca_cart");
+
+    // 2. On met à jour l'état local de ta Navbar
     setUser(null);
+
+    // 3. On affiche le message d'au revoir
     toast({
-      title: "Vous etes deconnecté",
-      description: "",
+      title: "Vous êtes déconnecté",
+      description: "À bientôt chez Green Afreeca !",
     });
-    navigate("/");
+
+    // 4. LA MÉTHODE FORTE : On attend une demi-seconde pour laisser le toast s'afficher,
+    // puis on force le navigateur à recharger la page d'accueil de zéro.
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 500);
   };
 
   // Classe pour les liens de navigation NavLink (Accepte une fonction)
@@ -88,10 +111,22 @@ const Navbar = () => {
 
           {/* Icônes Actions */}
           <div className="flex items-center gap-2">
+            {/* 💡 BOUTON ADMIN CONDITIONNEL (DESKTOP) */}
+            {user && user.role === "admin" && (
+              <Link to="/admin" className="hidden md:block mr-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-primary text-primary hover:bg-primary hover:text-white border-2 gap-2"
+                >
+                  <Settings size={16} /> Admin
+                </Button>
+              </Link>
+            )}
+
             {user ? (
               /* Menu Utilisateur Connecté */
               <div className="relative group">
-                {/* On utilise une string fixe pour className ici pour éviter l'erreur TS */}
                 <button className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-primary-light transition-all text-primary font-bold focus:outline-none">
                   <User className="h-5 w-5" />
                   <span className="hidden sm:inline-block text-sm">
@@ -182,6 +217,18 @@ const Navbar = () => {
               >
                 Produits
               </Link>
+
+              {/* 💡 LIEN ADMIN CONDITIONNEL (MOBILE) */}
+              {user && user.role === "admin" && (
+                <Link
+                  to="/admin"
+                  className="text-primary hover:text-primary-dark py-2 font-bold flex items-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Settings size={18} /> Dashboard Admin
+                </Link>
+              )}
+
               {user ? (
                 <div className="pt-2 border-t border-border flex items-center justify-between text-primary font-bold">
                   <div className="flex items-center gap-2">

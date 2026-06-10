@@ -115,14 +115,22 @@ const Account = () => {
   }, [activeTab, toast]);
 
   const handleLogout = () => {
+    // 1. On vide tout le disque dur
     localStorage.removeItem("userInfo");
     localStorage.removeItem("token");
+    localStorage.removeItem("greenafreeca_cart");
+
+    // 2. On affiche le message
     toast({
       title: "Vous êtes déconnecté",
       description: "À bientôt chez Green Afreeca !",
     });
-    navigate("/");
-    window.location.reload();
+
+    // 3. LA MÉTHODE FORTE : On redirige en forçant le navigateur à se vider.
+    // Cela empêche le CartContext de recréer le panier fantôme.
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 500);
   };
 
   const handleSaveProfile = () => {

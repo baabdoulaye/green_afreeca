@@ -1,8 +1,17 @@
-//productService.js
 import axios from "axios";
 
 // On écrit l'adresse EN DUR pour être sûr à 100% que ça marche
 const API_URL = "http://localhost:3000/api/products";
+
+// 💡 NOUVEAU : La fonction qui prépare le badge VIP (le token)
+const getAuthHeader = () => {
+  const token = localStorage.getItem("token");
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
 
 const getProducts = async () => {
   try {
@@ -31,7 +40,8 @@ const getProductById = async (id) => {
 
 const createProduct = async (productData) => {
   try {
-    const response = await axios.post(API_URL, productData);
+    // 💡 AJOUT DU TOKEN ICI : On le passe en 3ème paramètre
+    const response = await axios.post(API_URL, productData, getAuthHeader());
     return response.data;
   } catch (error) {
     console.error("❌ Erreur lors de la création :", error);
@@ -42,7 +52,8 @@ const createProduct = async (productData) => {
 // 4. Supprimer un produit (DELETE)
 const deleteProduct = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/${id}`);
+    // 💡 AJOUT DU TOKEN ICI : Pour un DELETE, la config est en 2ème paramètre
+    const response = await axios.delete(`${API_URL}/${id}`, getAuthHeader());
     return response.data;
   } catch (error) {
     console.error("❌ Erreur lors de la suppression :", error);
@@ -53,7 +64,12 @@ const deleteProduct = async (id) => {
 // 5. Mettre à jour un produit (PUT)
 const updateProduct = async (id, productData) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, productData);
+    // 💡 AJOUT DU TOKEN ICI : On le passe en 3ème paramètre
+    const response = await axios.put(
+      `${API_URL}/${id}`,
+      productData,
+      getAuthHeader(),
+    );
     return response.data;
   } catch (error) {
     console.error("❌ Erreur lors de la modification :", error);
@@ -69,4 +85,5 @@ const productService = {
   deleteProduct,
   updateProduct,
 };
+
 export default productService;

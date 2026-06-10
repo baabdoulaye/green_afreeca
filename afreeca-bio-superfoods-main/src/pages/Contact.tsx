@@ -28,15 +28,42 @@ const Contact = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulation - À connecter avec MongoDB et système d'email
-    setTimeout(() => {
-      toast({
-        title: "Message envoyé ! ✅",
-        description: "Nous vous répondrons dans les plus brefs délais !",
+    try {
+      // 💡 Remplacer l'URL par l'URL de ton API (ex: http://localhost:5000/api/contact)
+      const response = await fetch("http://localhost:3000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
-      setFormData({ name: "", email: "", subject: "", message: "" });
+
+      if (response.ok) {
+        toast({
+          title: "Message envoyé ! ✅",
+          description: "Nous vous répondrons dans les plus brefs délais !",
+        });
+        // On vide le formulaire après succès
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Erreur d'envoi ❌",
+          description:
+            errorData.message || "Une erreur est survenue lors de l'envoi.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur réseau 🔌",
+        description:
+          "Impossible de joindre le serveur. Vérifiez votre connexion.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (

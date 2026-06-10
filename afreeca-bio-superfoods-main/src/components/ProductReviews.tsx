@@ -1,6 +1,6 @@
 /**
  * Composant ProductReviews - Avis clients sur un produit
- * 
+ *
  * Affiche dynamiquement les notes et commentaires clients
  */
 
@@ -41,37 +41,44 @@ const defaultReviews: Review[] = [
     id: 1,
     name: "Sophie M.",
     rating: 5,
-    comment: "Excellent produit ! Je le recommande à 100%. La qualité est au rendez-vous et les bienfaits se font ressentir rapidement. 🌟",
+    comment:
+      "Excellent produit ! Je le recommande à 100%. La qualité est au rendez-vous et les bienfaits se font ressentir rapidement. 🌟",
     date: "Il y a 1 semaine",
-    verified: true
+    verified: true,
   },
   {
     id: 2,
     name: "Thomas L.",
     rating: 5,
-    comment: "Livraison rapide et produit conforme à la description. Je suis conquis par le goût et l'effet sur mon énergie quotidienne ! 💪",
+    comment:
+      "Livraison rapide et produit conforme à la description. Je suis conquis par le goût et l'effet sur mon énergie quotidienne ! 💪",
     date: "Il y a 2 semaines",
-    verified: true
+    verified: true,
   },
   {
     id: 3,
     name: "Aminata D.",
     rating: 4,
-    comment: "Très bon produit, authentique comme au Sénégal. J'aurais aimé un format plus grand mais sinon parfait ! 🇸🇳",
+    comment:
+      "Très bon produit, authentique comme au Sénégal. J'aurais aimé un format plus grand mais sinon parfait ! 🇸🇳",
     date: "Il y a 3 semaines",
-    verified: true
+    verified: true,
   },
   {
     id: 4,
     name: "Pierre B.",
     rating: 5,
-    comment: "Ma famille adore ! Les enfants en redemandent. Un vrai plaisir naturel et bon pour la santé. ❤️",
+    comment:
+      "Ma famille adore ! Les enfants en redemandent. Un vrai plaisir naturel et bon pour la santé. ❤️",
     date: "Il y a 1 mois",
-    verified: true
-  }
+    verified: true,
+  },
 ];
 
-const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReviewsProps) => {
+const ProductReviews = ({
+  productName,
+  reviews = defaultReviews,
+}: ProductReviewsProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -81,12 +88,14 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
 
   // Calcul des statistiques
   const totalReviews = reviews.length;
-  const averageRating = reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews;
-  
-  const ratingDistribution = [5, 4, 3, 2, 1].map(star => ({
+  const averageRating =
+    reviews.reduce((acc, r) => acc + r.rating, 0) / totalReviews;
+
+  const ratingDistribution = [5, 4, 3, 2, 1].map((star) => ({
     star,
-    count: reviews.filter(r => r.rating === star).length,
-    percentage: (reviews.filter(r => r.rating === star).length / totalReviews) * 100
+    count: reviews.filter((r) => r.rating === star).length,
+    percentage:
+      (reviews.filter((r) => r.rating === star).length / totalReviews) * 100,
   }));
 
   const renderStars = (rating: number) => {
@@ -94,7 +103,9 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
       <Star
         key={i}
         className={`h-4 w-4 ${
-          i < rating ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground"
+          i < rating
+            ? "text-yellow-400 fill-yellow-400"
+            : "text-muted-foreground"
         }`}
       />
     ));
@@ -112,8 +123,8 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
       >
         <Star
           className={`h-8 w-8 ${
-            i < (hoverRating || rating) 
-              ? "text-yellow-400 fill-yellow-400" 
+            i < (hoverRating || rating)
+              ? "text-yellow-400 fill-yellow-400"
               : "text-muted-foreground"
           }`}
         />
@@ -123,12 +134,13 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
 
   const handleSubmitReview = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (rating === 0) {
       toast({
         title: "Note requise ⭐",
-        description: "Veuillez sélectionner une note avant de soumettre votre avis.",
-        variant: "destructive"
+        description:
+          "Veuillez sélectionner une note avant de soumettre votre avis.",
+        variant: "destructive",
       });
       return;
     }
@@ -137,7 +149,7 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
       toast({
         title: "Nom requis 📝",
         description: "Veuillez entrer votre nom (minimum 2 caractères).",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -146,7 +158,7 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
       toast({
         title: "Commentaire trop court 💬",
         description: "Votre commentaire doit contenir au moins 10 caractères.",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -191,25 +203,29 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
                 <div key={star} className="flex items-center gap-3">
                   <span className="text-sm w-8">{star} ★</span>
                   <Progress value={percentage} className="flex-grow h-2" />
-                  <span className="text-sm text-muted-foreground w-8">{count}</span>
+                  <span className="text-sm text-muted-foreground w-8">
+                    {count}
+                  </span>
                 </div>
               ))}
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="w-full mt-6">
-                  Écrire un avis ✍️
-                </Button>
+                <Button className="w-full mt-6">Écrire un avis ✍️</Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl">Donnez votre avis ⭐</DialogTitle>
+                  <DialogTitle className="text-2xl">
+                    Donnez votre avis ⭐
+                  </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmitReview} className="space-y-6 mt-4">
                   {/* Note */}
                   <div className="space-y-2">
-                    <Label className="text-base font-semibold">Votre note</Label>
+                    <Label className="text-base font-semibold">
+                      Votre note
+                    </Label>
                     <div className="flex gap-1 justify-center py-2">
                       {renderInteractiveStars()}
                     </div>
@@ -226,7 +242,9 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
 
                   {/* Nom */}
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-base font-semibold">Votre prénom</Label>
+                    <Label htmlFor="name" className="text-base font-semibold">
+                      Votre prénom
+                    </Label>
                     <Input
                       id="name"
                       value={name}
@@ -238,7 +256,12 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
 
                   {/* Commentaire */}
                   <div className="space-y-2">
-                    <Label htmlFor="comment" className="text-base font-semibold">Votre commentaire</Label>
+                    <Label
+                      htmlFor="comment"
+                      className="text-base font-semibold"
+                    >
+                      Votre commentaire
+                    </Label>
                     <Textarea
                       id="comment"
                       value={comment}
@@ -271,7 +294,9 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
                   <div className="flex-grow">
                     <div className="flex items-center justify-between mb-2">
                       <div>
-                        <p className="font-bold text-foreground">{review.name}</p>
+                        <p className="font-bold text-foreground">
+                          {review.name}
+                        </p>
                         <div className="flex items-center gap-2">
                           <div className="flex gap-0.5">
                             {renderStars(review.rating)}
@@ -283,7 +308,9 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
                           )}
                         </div>
                       </div>
-                      <span className="text-sm text-muted-foreground">{review.date}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {review.date}
+                      </span>
                     </div>
                     <p className="text-muted-foreground">{review.comment}</p>
                   </div>
@@ -292,9 +319,9 @@ const ProductReviews = ({ productName, reviews = defaultReviews }: ProductReview
             ))}
 
             <div className="text-center pt-4">
-              <Button variant="outline">
+              {/* <Button variant="outline">
                 Voir tous les avis ({totalReviews})
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

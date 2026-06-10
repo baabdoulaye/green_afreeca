@@ -114,13 +114,17 @@ const Products = () => {
                 >
                   <div className="relative h-52 bg-gray-50">
                     <img
-                      // 💡 APPLICATION DE NOTRE FONCTION ICI
-                      src={getImageUrl(p.image_url)}
+                      // 💡 L'astuce magique : on vérifie l'URL à la volée !
+                      src={
+                        p.image_url?.startsWith("http")
+                          ? p.image_url
+                          : `http://localhost:3000${p.image_url}`
+                      }
                       alt={p.name}
                       className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                       onError={(e) => {
                         console.warn(
-                          "Image non trouvée sur le backend, passage au secours en ligne.",
+                          "Image non trouvée, passage au secours en ligne.",
                         );
                         (e.target as HTMLImageElement).src =
                           "https://placehold.co/600x400/e2e8f0/475569?text=Green+Afreeca";
