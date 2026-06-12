@@ -212,14 +212,11 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/auth/forgotpassword",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: resetEmail }),
-        },
-      );
+      const response = await fetch(`${API_URL}/forgotpassword`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: resetEmail }),
+      });
 
       const data = await response.json();
 
@@ -515,13 +512,6 @@ const Auth = () => {
                       onChange={(token) => setCaptchaToken(token)}
                     />
                   </div>
-
-                  {/* <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full"
-                    disabled={isLoading}
-                  ></Button> */}
 
                   <Button
                     type="submit"

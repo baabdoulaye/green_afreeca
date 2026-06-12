@@ -406,7 +406,7 @@ const ProductDetail = () => {
                 src={
                   product.image?.startsWith("http")
                     ? product.image
-                    : `http://localhost:3000${product.image}`
+                    : `${import.meta.env.VITE_API_BASE_URL.replace("/api/", "")}${product.image}`
                 }
                 alt={product.name}
                 className="w-full h-full object-cover"

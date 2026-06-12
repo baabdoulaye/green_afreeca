@@ -2,325 +2,130 @@
 
 ## 🌿 Description du Projet
 
-Green Afreeca est une plateforme e-commerce moderne et élégante dédiée à la vente de super-aliments africains bio. Notre mission est de proposer une alternative naturelle et puissante aux compléments alimentaires traditionnels, en mettant en avant les bienfaits exceptionnels des produits africains.
+Green Afreeca est une plateforme e-commerce Full-Stack moderne, performante et hautement sécurisée dédiée à la commercialisation de super-aliments africains bio (Baobab, Moringa, Bissap, Gingembre, Sucre Noir, Lait de Coco). Conçue sur une architecture multicouche découplée (MERN Stack) et entièrement conteneurisée, cette application propose une alternative naturelle et puissante aux compléments alimentaires synthétiques traditionnels.
 
-### Produits Phares
-- **Jus de Bouille (Baobab)** : 6x plus riche en Vitamine C que l'orange
-- **Bissap (Hibiscus)** : Riche en antioxydants, régulation de la pression artérielle
-- **Moringa** : L'arbre miracle, 7x plus de vitamine C que les oranges
-- **Gingembre** : Anti-inflammatoire naturel, amélioration de la digestion
-
-## 🎨 Caractéristiques de Design
-
-### Design Minimaliste et Moderne
-- **Style** : Flat design épuré avec utilisation intelligente du white space
-- **Couleurs** : Palette harmonieuse Vert/Jaune/Rouge sur fonds neutres (Blanc, Gris clair)
-- **Animations** : Transitions fluides et animations au scroll pour une expérience utilisateur exceptionnelle
-- **Responsive** : Entièrement adaptatif sur Desktop, Tablette et Mobile
-
-### Système de Couleurs (HSL)
-```css
-/* Vert Principal - Marque Green Afreeca */
---primary: 142 76% 36%
-
-/* Jaune - Accents et highlights */
---accent: 45 93% 58%
-
-/* Rouge - CTA et actions */
---secondary: 0 72% 51%
-
-/* Fonds neutres */
---background: 0 0% 100% (Blanc)
---muted: 0 0% 96% (Gris clair)
-```
-
-## 🛠️ Stack Technique
-
-### Frontend
-- **Framework** : React 18 avec TypeScript
-- **Routage** : React Router DOM v6
-- **Styling** : Tailwind CSS avec design system personnalisé
-- **UI Components** : Shadcn/ui (personnalisés)
-- **Animations** : CSS animations avec Tailwind
-- **Icônes** : Lucide React
-- **Build Tool** : Vite
-
-### Backend (À Connecter)
-- **Base de Données** : MongoDB (externe, à configurer)
-- **API** : Node.js + Express (à développer)
-- **Authentification** : JWT (à implémenter)
-
-## 📦 Prérequis
-
-Avant de commencer, assurez-vous d'avoir installé :
-- **Node.js** (v18 ou supérieur) - [Télécharger Node.js](https://nodejs.org/)
-- **npm** (v9 ou supérieur) - Inclus avec Node.js
-- **Git** - [Télécharger Git](https://git-scm.com/)
-
-## 🚀 Installation et Démarrage
-
-### 1. Cloner le Projet
-```bash
-git clone <URL_DU_REPO>
-cd green-afreeca
-```
-
-### 2. Installer les Dépendances
-```bash
-npm install
-```
-
-### 3. Démarrer le Serveur de Développement
-```bash
-npm run dev
-```
-
-L'application sera accessible sur `http://localhost:8080`
-
-### 4. Build pour la Production
-```bash
-npm run build
-```
-
-Les fichiers de production seront générés dans le dossier `dist/`
-
-## 📁 Structure du Projet
-
-```
-green-afreeca/
-├── src/
-│   ├── assets/              # Images et médias
-│   │   ├── hero-superfoods.jpg
-│   │   ├── product-baobab.jpg
-│   │   ├── product-bissap.jpg
-│   │   ├── product-moringa.jpg
-│   │   └── product-ginger.jpg
-│   ├── components/          # Composants React réutilisables
-│   │   ├── ui/             # Composants UI de base (Shadcn)
-│   │   ├── Navbar.tsx      # Barre de navigation
-│   │   └── Footer.tsx      # Pied de page
-│   ├── pages/              # Pages de l'application
-│   │   ├── Home.tsx        # Page d'accueil
-│   │   └── NotFound.tsx    # Page 404
-│   ├── lib/                # Utilitaires
-│   │   └── utils.ts
-│   ├── hooks/              # Hooks React personnalisés
-│   ├── App.tsx             # Composant principal
-│   ├── main.tsx            # Point d'entrée
-│   └── index.css           # Styles globaux et design system
-├── public/                 # Fichiers publics statiques
-├── tailwind.config.ts      # Configuration Tailwind CSS
-├── vite.config.ts          # Configuration Vite
-├── tsconfig.json           # Configuration TypeScript
-└── README.md               # Ce fichier
-```
-
-## 🎯 Fonctionnalités Actuelles
-
-### ✅ Implémenté
-- ✅ Page d'accueil avec section Hero dynamique
-- ✅ Affichage des produits en vedette avec images
-- ✅ Navigation responsive avec menu mobile
-- ✅ Footer avec liens et informations de contact
-- ✅ Design system complet (couleurs, animations, typographie)
-- ✅ Animations fluides au scroll et sur hover
-- ✅ Images générées pour les produits
-
-### 🔜 À Venir (Nécessite MongoDB)
-- ⏳ Page catalogue complète des produits
-- ⏳ Pages détails produits individuelles
-- ⏳ Système de panier d'achat
-- ⏳ Authentification utilisateur (inscription/connexion)
-- ⏳ Gestion du compte utilisateur
-- ⏳ Processus de checkout et paiement
-- ⏳ Système de recherche et filtres
-- ⏳ Avis et notations clients
-
-## 🔌 Connexion à MongoDB (À Configurer)
-
-### Architecture de Données MongoDB Recommandée
-
-#### Collection : `users`
-```javascript
-{
-  _id: ObjectId,
-  email: String (unique, required),
-  password: String (hashed, required),
-  nom: String,
-  prenom: String,
-  telephone: String,
-  adresse: {
-    rue: String,
-    ville: String,
-    codePostal: String,
-    pays: String
-  },
-  dateInscription: Date,
-  derniereConnexion: Date
-}
-```
-
-#### Collection : `products`
-```javascript
-{
-  _id: ObjectId,
-  nom: String (required),
-  slug: String (unique, required),
-  description: String,
-  descriptionLongue: String,
-  prix: Number (required),
-  prixPromo: Number,
-  images: [String], // URLs des images
-  categorie: String,
-  stock: Number,
-  bienfaits: [String],
-  utilisation: String,
-  ingredients: String,
-  origine: String,
-  certifications: [String],
-  actif: Boolean,
-  dateAjout: Date
-}
-```
-
-#### Collection : `orders`
-```javascript
-{
-  _id: ObjectId,
-  userId: ObjectId (ref: users),
-  numeroCommande: String (unique),
-  produits: [{
-    productId: ObjectId (ref: products),
-    nom: String,
-    prix: Number,
-    quantite: Number
-  }],
-  montantTotal: Number,
-  statut: String (enum: ['en_attente', 'confirmee', 'expediee', 'livree', 'annulee']),
-  adresseLivraison: {
-    nom: String,
-    rue: String,
-    ville: String,
-    codePostal: String,
-    pays: String,
-    telephone: String
-  },
-  dateCommande: Date,
-  dateLivraison: Date,
-  methodePaiement: String,
-  notes: String
-}
-```
-
-#### Collection : `cart`
-```javascript
-{
-  _id: ObjectId,
-  userId: ObjectId (ref: users),
-  produits: [{
-    productId: ObjectId (ref: products),
-    quantite: Number
-  }],
-  dateModification: Date
-}
-```
-
-### Justification de MongoDB
-
-MongoDB est particulièrement adapté pour ce projet e-commerce car :
-
-1. **Flexibilité du Schéma** : Permet d'ajouter facilement de nouveaux champs produits (variantes, options, etc.) sans migration complexe
-2. **Performance** : Excellente performance pour les requêtes de lecture (catalogue produits)
-3. **Scalabilité Horizontale** : Facilite la croissance du catalogue et du nombre d'utilisateurs
-4. **Documents Imbriqués** : Structure naturelle pour les paniers, commandes avec produits
-5. **Écosystème Node.js** : Intégration native avec l'écosystème JavaScript/TypeScript
-
-### Configuration Backend Recommandée
-
-```javascript
-// Exemple de connexion MongoDB avec Mongoose
-import mongoose from 'mongoose';
-
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connecté avec succès');
-  } catch (error) {
-    console.error('Erreur de connexion MongoDB:', error);
-    process.exit(1);
-  }
-};
-```
-
-### Variables d'Environnement Nécessaires
-Créer un fichier `.env` à la racine du projet backend :
-```
-MONGODB_URI=mongodb://localhost:27017/green-afreeca
-JWT_SECRET=votre_cle_secrete_jwt
-PORT=5000
-```
-
-## 🎨 Personnalisation du Design System
-
-Le design system est défini dans `src/index.css` et `tailwind.config.ts`. Pour personnaliser :
-
-### Couleurs
-Modifier les variables CSS dans `src/index.css` :
-```css
-:root {
-  --primary: 142 76% 36%;  /* Vert principal */
-  --accent: 45 93% 58%;     /* Jaune */
-  --secondary: 0 72% 51%;   /* Rouge */
-}
-```
-
-### Animations
-Ajouter de nouvelles animations dans `tailwind.config.ts` :
-```typescript
-keyframes: {
-  "votre-animation": {
-    "0%": { /* état initial */ },
-    "100%": { /* état final */ }
-  }
-}
-```
-
-## 📝 Scripts Disponibles
-
-```bash
-# Développement
-npm run dev          # Démarre le serveur de développement
-
-# Production
-npm run build        # Crée le build de production
-npm run preview      # Prévisualise le build de production
-
-# Qualité du Code
-npm run lint         # Vérifie le code avec ESLint
-```
-
-## 🤝 Contribution
-
-Pour contribuer au projet :
-1. Forkez le repository
-2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/NouvelleFonctionnalite`)
-3. Committez vos changements (`git commit -m 'Ajout nouvelle fonctionnalité'`)
-4. Pushez vers la branche (`git push origin feature/NouvelleFonctionnalite`)
-5. Ouvrez une Pull Request
-
-## 📄 Licence
-
-Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
-
-## 📞 Contact
-
-Pour toute question ou suggestion :
-- **Email** : contact@greenafreeca.com
-- **Site Web** : (À venir)
+Le projet a été développé en respectant scrupuleusement les exigences du référentiel **Concepteur Développeur d'Applications (CDA)**, mettant l'accent sur la séparation des responsabilités (MVC), la sécurité des données (OWASP/RGPD) et la gestion de la dette technique en méthodologie agile.
 
 ---
 
-**Développé avec ❤️ pour promouvoir les super-aliments africains bio**
+## 🛠️ Stack Technique
+
+### Frontend (Application Client)
+
+- **Framework** : React 18 avec TypeScript (Typage statique fort pour la fiabilité de l'UI)
+- **Gestion d'état globale** : React Context API (State management léger et performant pour le panier d'achat)
+- **Routage** : React Router DOM v6 (Gestion des routes dynamiques et protection d'accès)
+- **Styling & Design System** : Tailwind CSS avec des variables natives HSL (Prêt pour le Dark Mode)
+- **Composants UI** : Shadcn/ui (Architecture basée sur la possession du code source et l'accessibilité Radix UI)
+- **Build Tool** : Vite
+
+### Backend (Architecture API REST)
+
+- **Environnement d'exécution** : Node.js (Asynchrone, non bloquant)
+- **Framework Web** : Express (Gestion du routage, des middlewares et du cycle de vie des requêtes)
+- **Modélisation & ORM** : Mongoose (Schématisation, validation et hooks de cycle de vie NoSQL)
+- **Sécurité & Chiffrement** : Bcryptjs (Hachage des mots de passe avec grain de sel) & Crypto (Tokens éphémères)
+- **Gestion des Sessions** : JSON Web Tokens (JWT) encapsulés dans des cookies sécurisés `httpOnly`
+- **Passerelle de Paiement** : API Stripe (Tunnel de paiement sécurisé avec calcul des frais à la volée)
+- **Service de Messagerie** : Nodemailer (Formulaire de contact et flux de réinitialisation de mot de passe)
+
+### Infrastructure & DevOps
+
+- **Conteneurisation** : Docker & Docker Compose (Isolant l'API Node.js et la base de données MongoDB)
+- **Persistance des Données** : Volumes Docker pour l'ancrage des données physiques de MongoDB
+
+---
+
+## 🎯 Fonctionnalités Clés Implémentées
+
+### 🛒 Expérience Client (Front-end & Tunnel d'achat)
+
+- **Catalogue Dynamique** : Affichage en temps réel des produits, prix et descriptions synchronisés avec MongoDB.
+- **Panier d'Achat Global** : Gestion asynchrone des articles avec prise en charge avancée des variantes (formats/tailles) et persistance automatique dans le `localStorage`.
+- **Tunnel de Commande Sécurisé** : Intégration de la solution de paiement Stripe avec bascule automatique des frais de livraison selon le montant du panier.
+- **Espace Compte Personnel** : Inscription, connexion, consultation de l'historique des commandes et gestion sécurisée du profil.
+- **Sécurité et RGPD** : Bandeau de gestion du consentement des cookies (`CookieBanner`) et purge totale des sessions (`localStorage` + Cookies) lors de la déconnexion.
+- **Formulaire de Contact** : Passerelle d'envoi d'emails transactionnels asynchrones connectée à Nodemailer.
+
+### 👑 Tableau de Bord Administrateur (Back-Office)
+
+- **Gestion du Catalogue (CRUD)** : Interface complète pour ajouter, modifier ou supprimer des produits (avec saisie d'URLs d'images externes compatibles CDN).
+- **Suivi Logistique des Commandes** : Visualisation globale de toutes les ventes du site et bouton d'action pour marquer un colis comme "Livré" avec historisation des dates.
+- **Gestion des Utilisateurs** : Contrôle des comptes et des rôles.
+
+---
+
+## 🐳 Architecture de l'Infrastructure (Docker Compose)
+
+L'application est orchestrée de manière centralisée pour garantir la reproductibilité parfaite de l'environnement de développement et de production.
+
+Le fichier `docker-compose.yml` pilote deux services interconnectés au sein d'un réseau privé virtuel :
+
+1. **`api`** : Le conteneur exécutant le serveur Node.js/Express (Exposé sur le port 3000). Il utilise un mécanisme de montage de volumes pour intégrer les modifications de code en temps réel sans nécessiter de reconstruction de l'image.
+2. **`mongo_db`** : Le conteneur de la base de données officielle MongoDB (Exposé sur le port 27017 pour l'analyse via MongoDB Compass).
+
+Un **Volume Docker nommé (`mongo_data`)** est configuré pour assurer la persistance absolue des données sur le disque dur de la machine hôte, empêchant toute perte d'informations lors du cycle de vie des conteneurs (`docker-compose down`).
+
+---
+
+## 🗄️ Architecture des Données (Modèles Mongoose)
+
+### 1. Modèle `User` (Utilisateurs)
+
+- **Champs** : `firstName`, `lastName`, `email` (unique/validé), `password` (chiffré), `role` (enum: client/admin), `addresses` (sous-documents imbriqués), `resetPasswordToken`, `resetPasswordExpire`.
+- **Sécurité** : Hook `.pre('save')` pour le hachage asynchrone automatique des mots de passe via Bcrypt avant l'écriture en base de données.
+
+### 2. Modèle `Product` (Catalogue)
+
+- **Champs** : `name` (unique), `slug` (unique), `description`, `usage` (mode d'emploi modifiable), `marketing_claim`, `price`, `stock`, `is_bio`, `category`, `image_url`, `rating`, `num_reviews`.
+- **Rigueur** : Validation stricte des prix et stocks minimums (`min: 0`) directement au niveau de la couche ORM.
+
+### 3. Modèle `Order` (Commandes)
+
+- **Champs** : `user` (Relation `ObjectId` avec la collection Users), `orderItems` (Tableau dénormalisé), `shippingAddress`, `paymentMethod`, `paymentResult`, `itemsPrice`, `shippingPrice`, `totalPrice`, `isPaid`, `paidAt`, `isDelivered`, `deliveredAt`.
+- **Bonne pratique de dénormalisation** : Les informations critiques des produits (`name`, `price`, `image_url`) sont copiées en dur dans le document de la commande au moment de l'achat. Cela immunise l'historique des factures clients contre les modifications ultérieures du catalogue par l'administrateur.
+
+---
+
+## 🚀 Installation et Lancement Rapide
+
+### 1. Configuration des Environnements
+
+Créez un fichier `.env` dans le dossier racine du Back-end en vous basant sur les variables d'infrastructure (Clés Stripe, identifiants SMTP Mailtrap, configurations JWT).
+
+### 2. Démarrage de l'Infrastructure Globale
+
+Pour lancer l'ensemble de l'écosystème (API + Base de données + Persistance), exécutez la commande suivante à la racine du projet :
+
+```bash
+docker-compose up --build
+```
+
+📁 Structure Macro du Projet
+
+afreeca-bio-superfoods/
+├── backend/
+│ ├── controllers/ # Logique métier et contrôleurs de requêtes (Auth, Order, Product, Stripe)
+│ ├── middleware/ # Intercepteurs de sécurité (Vérification JWT, RBAC Admin)
+│ ├── models/ # Schémas de données Mongoose (User, Product, Order)
+│ ├── routes/ # Routeurs Express RESTful découpés par entité
+│ ├── utils/ # Services utilitaires ( sendEmail via Nodemailer)
+│ ├── Dockerfile # Instructions de construction de l'image de l'API
+│ └── server.js # Point d'entrée principal, configuration CORS et connexion BDD
+├── frontend/
+│ ├── src/
+│ │ ├── components/ # Composants d'interface (Navbar, Footer, CookieBanner)
+│ │ ├── contexts/ # Gestionnaires d'états globaux (CartContext)
+│ │ ├── hooks/ # Hooks personnalisés et moteurs d'alertes (useToast)
+│ │ ├── pages/ # Vues de l'application et Dashboard d'administration
+│ │ ├── services/ # Centralisation des appels API Axios (productService)
+│ │ └── index.css # Design System global basé sur les variables HSL
+│ └── docker-compose.yml # Orchestrateur multi-conteneurs (API & MongoDB)
+
+3. Lancement du Front-end (React)
+   Dans un second terminal, accédez au dossier du Front-end, installez les dépendances et lancez le serveur d'interface :
+
+Bash
+npm install
+npm run dev
+L'interface utilisateur sera accessible sur http://localhost:8080.

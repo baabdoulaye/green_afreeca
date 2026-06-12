@@ -1,3 +1,4 @@
+// backend/controllers/orderController.js
 const Order = require("../models/Order");
 const Product = require("../models/Product"); // On importe le modèle Product pour modifier les stocks
 

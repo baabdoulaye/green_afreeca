@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const URL_BACKEND = "http://localhost:3000";
+// const URL_BACKEND = "http://localhost:3000";
 
 const Products = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -54,7 +54,7 @@ const Products = () => {
       fileName = "baobab-poudre.jpg";
     }
 
-    return `${URL_BACKEND}/${fileName}`;
+    return `${import.meta.env.VITE_API_BASE_URL.replace("/api/", "")}${fileName}`;
   };
 
   const filteredProducts = products.filter((p) => {

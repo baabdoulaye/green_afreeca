@@ -122,30 +122,33 @@ const Checkout = () => {
 
     try {
       // 1️⃣ ON CRÉE LA COMMANDE DANS TA BDD MONGO
-      const orderResponse = await fetch("http://localhost:3000/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token.trim()}`,
-        },
-        body: JSON.stringify({
-          items: items.map((item) => ({
-            product: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price,
-            variant: item.variant,
-          })),
-          totalAmount: total,
-          shippingAddress: {
-            street: shippingInfo.address,
-            city: shippingInfo.city,
-            zipCode: shippingInfo.postalCode,
-            country: shippingInfo.country,
+      const orderResponse = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}orders`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token.trim()}`,
           },
-          status: "En attente de paiement", // On change le statut !
-        }),
-      });
+          body: JSON.stringify({
+            items: items.map((item) => ({
+              product: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+              variant: item.variant,
+            })),
+            totalAmount: total,
+            shippingAddress: {
+              street: shippingInfo.address,
+              city: shippingInfo.city,
+              zipCode: shippingInfo.postalCode,
+              country: shippingInfo.country,
+            },
+            status: "En attente de paiement", // On change le statut !
+          }),
+        },
+      );
 
       const orderData = await orderResponse.json();
 
@@ -157,7 +160,7 @@ const Checkout = () => {
 
       // 2️⃣ ON DEMANDE LE LIEN DE PAIEMENT À STRIPE
       const stripeResponse = await fetch(
-        "http://localhost:3000/api/stripe/create-checkout-session",
+        `${import.meta.env.VITE_API_BASE_URL}stripe/create-checkout-session`,
         {
           method: "POST",
           headers: {

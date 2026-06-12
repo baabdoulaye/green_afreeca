@@ -6,7 +6,7 @@
 
 import { Leaf, Heart, Users, Award } from "lucide-react";
 import { Card } from "@/components/ui/card";
-// import heroImg from "@/assets/hero-superfoods.jpg";
+import { Link } from "react-router-dom";
 
 const About = () => {
   const values = [
@@ -178,11 +178,11 @@ const About = () => {
             Commandez dès maintenant et profitez des bienfaits naturels de
             l'Afrique
           </p>
-          <a href="/produits">
+          <Link to="/produits">
             <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 rounded-md px-8">
               Voir nos produits
             </button>
-          </a>
+          </Link>
         </div>
       </section>
     </div>

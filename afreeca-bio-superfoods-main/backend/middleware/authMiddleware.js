@@ -31,30 +31,39 @@ exports.protect = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // 5. Récupère l'utilisateur grâce à l'ID décodé
-    // NOTE: Le mot de passe n'est pas sélectionné par défaut, c'est sécurisé.
     req.user = await User.findById(decoded.id);
+
+    // 🛡️ SÉCURITÉ ANTI-CRASH : On vérifie que l'utilisateur existe toujours en BDD
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        error: "Le compte utilisateur lié à ce jeton n'existe plus.",
+      });
+    }
 
     next(); // Passe au contrôleur suivant
   } catch (err) {
-    console.error(err);
+    console.error("❌ [Erreur Middleware Protect] :", err.message);
     return res.status(401).json({
       success: false,
       error: "Jeton non valide ou expiré.",
     });
   }
 };
+
 // Fonction pour vérifier le rôle de l'utilisateur (ex: doit être 'admin')
 exports.authorize = (...roles) => {
   return (req, res, next) => {
-    // backend/middleware/authMiddleware.js (Ajoute ceci)
+    // Le req.user est maintenant garanti d'exister grâce à la sécurité du dessus
     console.log(
       `🛡️ [SÉCURITÉ BACKEND] Tentative d'accès. Rôle détecté en BDD : ${req.user ? req.user.role : "aucun"}`,
     );
-    // Vérifie si le rôle de l'utilisateur (req.user.role) est inclus dans les rôles autorisés (roles)
-    if (!roles.includes(req.user.role)) {
+
+    // Vérifie si le rôle de l'utilisateur est inclus dans les rôles autorisés
+    if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({
         success: false,
-        error: `Accès refusé. Le rôle ${req.user.role} n'est pas autorisé.`,
+        error: `Accès refusé. Rôle non autorisé.`,
       });
     }
     next();

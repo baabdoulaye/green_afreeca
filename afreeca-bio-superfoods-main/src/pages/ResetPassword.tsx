@@ -49,7 +49,7 @@ const ResetPassword = () => {
     try {
       // On envoie le PUT au backend avec le token de l'URL
       const response = await fetch(
-        `http://localhost:3000/api/auth/resetpassword/${resettoken}`,
+        `${import.meta.env.VITE_API_BASE_URL}auth/resetpassword/${resettoken}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

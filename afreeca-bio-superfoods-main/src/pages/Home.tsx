@@ -255,7 +255,7 @@ const Home = () => {
                       src={
                         p.image_url?.startsWith("http")
                           ? p.image_url
-                          : `http://localhost:3000${p.image_url}`
+                          : `${import.meta.env.VITE_API_BASE_URL.replace("/api/", "")}${p.image_url}`
                       }
                       alt={p.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -331,9 +331,9 @@ const Home = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 items-stretch">
               <div className="bg-gradient-to-br from-destructive/10 to-destructive/5 p-8 rounded-3xl border border-destructive/20 flex flex-col justify-center backdrop-blur-sm hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 rounded-full bg-destructive/20 flex items-center justify-center">
+                  {/* <div className="h-12 w-12 rounded-full bg-destructive/20 flex items-center justify-center">
                     <span className="text-2xl"></span>
-                  </div>
+                  </div> */}
                   <h3 className="text-2xl font-bold text-destructive">
                     Une Réalité Alarmante
                   </h3>
@@ -371,9 +371,9 @@ const Home = () => {
               </div>
               <div className="bg-gradient-to-br from-card to-muted p-8 rounded-3xl border border-border shadow-lg flex flex-col justify-center order-1 lg:order-2 hover:shadow-xl transition-all duration-300">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
+                  {/* <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
                     <span className="text-2xl"></span>
-                  </div>
+                  </div> */}
                   <h3 className="text-2xl font-bold text-primary">
                     Le Problème des Compléments
                   </h3>
@@ -398,9 +398,9 @@ const Home = () => {
             <div className="mb-12">
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center gap-3 mb-4">
-                  <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
+                  {/* <div className="h-12 w-12 rounded-full bg-primary/20 flex items-center justify-center">
                     <span className="text-2xl"></span>
-                  </div>
+                  </div> */}
                   <h3 className="text-2xl font-bold text-primary">
                     La Puissance Naturelle
                   </h3>
@@ -507,9 +507,9 @@ const Home = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
+                    {/* <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
                       <span className="text-2xl"></span>
-                    </div>
+                    </div> */}
                     <h3 className="text-2xl font-bold text-foreground">
                       Pourquoi C'est Plus Rentable
                     </h3>
