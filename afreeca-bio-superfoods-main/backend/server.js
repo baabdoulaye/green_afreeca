@@ -42,7 +42,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // 🔗 CONNEXION MONGODB
 // ----------------------------------------------------
 const MONGO_URI =
-  process.env.MONGO_URI || "mongodb://greenafreeca_mongodb:27017/greenafricadb";
+  process.env.MONGODB_URI ||
+  "mongodb://greenafreeca_mongodb:27017/greenafricadb";
 
 mongoose
   .connect(MONGO_URI)
