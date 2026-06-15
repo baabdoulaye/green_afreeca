@@ -1,8 +1,7 @@
 import axios from "axios";
 
 // On écrit l'adresse EN DUR pour être sûr à 100% que ça marche
-const API_URL = "http://localhost:3000/api/products";
-
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}products`;
 // 💡 NOUVEAU : La fonction qui prépare le badge VIP (le token)
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");

@@ -118,7 +118,7 @@ const Products = () => {
                       src={
                         p.image_url?.startsWith("http")
                           ? p.image_url
-                          : `http://localhost:3000${p.image_url}`
+                          : `${import.meta.env.VITE_API_BASE_URL.replace("/api/", "")}${p.image_url}`
                       }
                       alt={p.name}
                       className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"

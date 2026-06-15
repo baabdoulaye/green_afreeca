@@ -86,11 +86,9 @@ const Account = () => {
       setIsLoadingOrders(true);
       try {
         const response = await fetch(
-          "http://localhost:3000/api/orders/myorders",
+          `${import.meta.env.VITE_API_BASE_URL}orders/myorders`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           },
         );
 

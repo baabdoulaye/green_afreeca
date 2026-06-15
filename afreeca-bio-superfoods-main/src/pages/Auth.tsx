@@ -23,8 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const API_URL = "http://localhost:3000/api/auth";
-
+const API_URL = `${import.meta.env.VITE_API_BASE_URL}auth`;
 const Auth = () => {
   const { toast } = useToast();
   const navigate = useNavigate();

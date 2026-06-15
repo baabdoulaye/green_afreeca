@@ -104,10 +104,12 @@ const Admin = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/orders", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}orders`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       if (response.status === 401 || response.status === 403) {
         toast({
           title: "Bien tenté ! 🕵️‍♂️",
@@ -149,7 +151,7 @@ const Admin = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `http://localhost:3000/api/orders/${orderId}/deliver`,
+        `${import.meta.env.VITE_API_BASE_URL}orders/${orderId}/deliver`,
         {
           method: "PUT",
           headers: { Authorization: `Bearer ${token}` },
@@ -488,7 +490,7 @@ const Admin = () => {
                             src={
                               p.image_url?.startsWith("http")
                                 ? p.image_url
-                                : `http://localhost:3000${p.image_url}`
+                                : `${import.meta.env.VITE_API_BASE_URL.replace("/api/", "")}${p.image_url}`
                             }
                             className="w-full h-full object-cover"
                             alt={p.name}

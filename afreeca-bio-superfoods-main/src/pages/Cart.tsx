@@ -41,7 +41,7 @@ const Cart = () => {
     if (fileName === "placeholder.png" || fileName === "placeholder.svg") {
       fileName = "baobab-poudre.jpg"; // Hack pour le baobab
     }
-    return `http://localhost:3000/${fileName}`;
+    return `${import.meta.env.VITE_API_BASE_URL.replace("/api/", "")}/${fileName}`;
   };
 
   if (items.length === 0) {
