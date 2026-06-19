@@ -1,131 +1,127 @@
-# Green Afreeca - E-commerce de Super-Aliments Africains Bio
+Green Afreeca - Organic African Superfoods E-commerce
+Project Description
+Green Afreeca is a modern, high-performance, and highly secure Full-Stack e-commerce platform dedicated to marketing organic African superfoods (Baobab, Moringa, Hibiscus, Ginger, Black Sugar, Coconut Milk). Built on a decoupled multi-layer architecture (MERN Stack) and fully containerized, this application offers a natural and powerful alternative to traditional synthetic dietary supplements.
 
-## 🌿 Description du Projet
+The project was developed in strict accordance with the requirements of the Concepteur Développeur d'Applications (CDA) curriculum, focusing on separation of concerns (MVC), data security (OWASP/GDPR), and technical debt management through agile methodology.
 
-Green Afreeca est une plateforme e-commerce Full-Stack moderne, performante et hautement sécurisée dédiée à la commercialisation de super-aliments africains bio (Baobab, Moringa, Bissap, Gingembre, Sucre Noir, Lait de Coco). Conçue sur une architecture multicouche découplée (MERN Stack) et entièrement conteneurisée, cette application propose une alternative naturelle et puissante aux compléments alimentaires synthétiques traditionnels.
+Technical Stack
+Frontend (Client Application)
+Framework: React 18 with TypeScript (Strong static typing for UI reliability)
 
-Le projet a été développé en respectant scrupuleusement les exigences du référentiel **Concepteur Développeur d'Applications (CDA)**, mettant l'accent sur la séparation des responsabilités (MVC), la sécurité des données (OWASP/RGPD) et la gestion de la dette technique en méthodologie agile.
+Global State Management: React Context API (Lightweight and performant state management for the shopping cart)
 
----
+Routing: React Router DOM v6 (Dynamic routing and access protection)
 
-## 🛠️ Stack Technique
+Styling & Design System: Tailwind CSS using native HSL variables (Dark Mode ready)
 
-### Frontend (Application Client)
+UI Components: Shadcn/ui (Architecture based on code ownership and Radix UI accessibility)
 
-- **Framework** : React 18 avec TypeScript (Typage statique fort pour la fiabilité de l'UI)
-- **Gestion d'état globale** : React Context API (State management léger et performant pour le panier d'achat)
-- **Routage** : React Router DOM v6 (Gestion des routes dynamiques et protection d'accès)
-- **Styling & Design System** : Tailwind CSS avec des variables natives HSL (Prêt pour le Dark Mode)
-- **Composants UI** : Shadcn/ui (Architecture basée sur la possession du code source et l'accessibilité Radix UI)
-- **Build Tool** : Vite
+Build Tool: Vite
 
-### Backend (Architecture API REST)
+Backend (REST API Architecture)
+Runtime Environment: Node.js (Asynchronous, non-blocking)
 
-- **Environnement d'exécution** : Node.js (Asynchrone, non bloquant)
-- **Framework Web** : Express (Gestion du routage, des middlewares et du cycle de vie des requêtes)
-- **Modélisation & ORM** : Mongoose (Schématisation, validation et hooks de cycle de vie NoSQL)
-- **Sécurité & Chiffrement** : Bcryptjs (Hachage des mots de passe avec grain de sel) & Crypto (Tokens éphémères)
-- **Gestion des Sessions** : JSON Web Tokens (JWT) encapsulés dans des cookies sécurisés `httpOnly`
-- **Passerelle de Paiement** : API Stripe (Tunnel de paiement sécurisé avec calcul des frais à la volée)
-- **Service de Messagerie** : Nodemailer (Formulaire de contact et flux de réinitialisation de mot de passe)
+Web Framework: Express (Request routing, middleware management, and request lifecycle)
 
-### Infrastructure & DevOps
+Modeling & ORM: Mongoose (Schema definition, validation, and NoSQL lifecycle hooks)
 
-- **Conteneurisation** : Docker & Docker Compose (Isolant l'API Node.js et la base de données MongoDB)
-- **Persistance des Données** : Volumes Docker pour l'ancrage des données physiques de MongoDB
+Security & Encryption: Bcryptjs (Password hashing with salt) & Crypto (Ephemeral tokens)
 
----
+Session Management: JSON Web Tokens (JWT) encapsulated in secure httpOnly cookies
 
-## 🎯 Fonctionnalités Clés Implémentées
+Payment Gateway: Stripe API (Secure payment tunnel with automated shipping fee calculation)
 
-### 🛒 Expérience Client (Front-end & Tunnel d'achat)
+Messaging Service: Nodemailer (Contact form and password reset flow)
 
-- **Catalogue Dynamique** : Affichage en temps réel des produits, prix et descriptions synchronisés avec MongoDB.
-- **Panier d'Achat Global** : Gestion asynchrone des articles avec prise en charge avancée des variantes (formats/tailles) et persistance automatique dans le `localStorage`.
-- **Tunnel de Commande Sécurisé** : Intégration de la solution de paiement Stripe avec bascule automatique des frais de livraison selon le montant du panier.
-- **Espace Compte Personnel** : Inscription, connexion, consultation de l'historique des commandes et gestion sécurisée du profil.
-- **Sécurité et RGPD** : Bandeau de gestion du consentement des cookies (`CookieBanner`) et purge totale des sessions (`localStorage` + Cookies) lors de la déconnexion.
-- **Formulaire de Contact** : Passerelle d'envoi d'emails transactionnels asynchrones connectée à Nodemailer.
+Infrastructure & DevOps
+Containerization: Docker & Docker Compose (Isolating Node.js API and MongoDB database)
 
-### 👑 Tableau de Bord Administrateur (Back-Office)
+Data Persistence: Docker Volumes for physical MongoDB data storage
 
-- **Gestion du Catalogue (CRUD)** : Interface complète pour ajouter, modifier ou supprimer des produits (avec saisie d'URLs d'images externes compatibles CDN).
-- **Suivi Logistique des Commandes** : Visualisation globale de toutes les ventes du site et bouton d'action pour marquer un colis comme "Livré" avec historisation des dates.
-- **Gestion des Utilisateurs** : Contrôle des comptes et des rôles.
+Key Features Implemented
+Customer Experience (Front-end & Checkout)
+Dynamic Catalog: Real-time display of products, prices, and descriptions synchronized with MongoDB.
 
----
+Global Shopping Cart: Asynchronous item management with advanced variant support (sizes/formats) and automatic persistence in localStorage.
 
-## 🐳 Architecture de l'Infrastructure (Docker Compose)
+Secure Checkout: Stripe payment integration with automatic shipping fee toggling based on cart total.
 
-L'application est orchestrée de manière centralisée pour garantir la reproductibilité parfaite de l'environnement de développement et de production.
+User Account Space: Registration, login, order history, and secure profile management.
 
-Le fichier `docker-compose.yml` pilote deux services interconnectés au sein d'un réseau privé virtuel :
+Security and GDPR: Consent management banner (CookieBanner) and total session purging (localStorage + Cookies) upon logout.
 
-1. **`api`** : Le conteneur exécutant le serveur Node.js/Express (Exposé sur le port 3000). Il utilise un mécanisme de montage de volumes pour intégrer les modifications de code en temps réel sans nécessiter de reconstruction de l'image.
-2. **`mongo_db`** : Le conteneur de la base de données officielle MongoDB (Exposé sur le port 27017 pour l'analyse via MongoDB Compass).
+Contact Form: Asynchronous transactional email gateway connected to Nodemailer.
 
-Un **Volume Docker nommé (`mongo_data`)** est configuré pour assurer la persistance absolue des données sur le disque dur de la machine hôte, empêchant toute perte d'informations lors du cycle de vie des conteneurs (`docker-compose down`).
+Administrator Dashboard (Back-Office)
+Catalog Management (CRUD): Full interface for adding, modifying, or deleting products (with input for CDN-compatible external image URLs).
 
----
+Order Logistics Tracking: Global view of all site sales and an action button to mark packages as "Delivered," with historical date tracking.
 
-## 🗄️ Architecture des Données (Modèles Mongoose)
+User Management: Account and role control.
 
-### 1. Modèle `User` (Utilisateurs)
+Infrastructure Architecture (Docker Compose)
+The application is centrally orchestrated to ensure perfect reproducibility of the development and production environments.
 
-- **Champs** : `firstName`, `lastName`, `email` (unique/validé), `password` (chiffré), `role` (enum: client/admin), `addresses` (sous-documents imbriqués), `resetPasswordToken`, `resetPasswordExpire`.
-- **Sécurité** : Hook `.pre('save')` pour le hachage asynchrone automatique des mots de passe via Bcrypt avant l'écriture en base de données.
+The docker-compose.yml file manages two interconnected services within a private virtual network:
 
-### 2. Modèle `Product` (Catalogue)
+api: The container running the Node.js/Express server (Exposed on port 3000). It uses volume mounting to integrate code changes in real-time without requiring image rebuilds.
 
-- **Champs** : `name` (unique), `slug` (unique), `description`, `usage` (mode d'emploi modifiable), `marketing_claim`, `price`, `stock`, `is_bio`, `category`, `image_url`, `rating`, `num_reviews`.
-- **Rigueur** : Validation stricte des prix et stocks minimums (`min: 0`) directement au niveau de la couche ORM.
+mongo_db: The official MongoDB database container (Exposed on port 27017 for analysis via MongoDB Compass).
 
-### 3. Modèle `Order` (Commandes)
+A named Docker Volume (mongo_data) is configured to ensure absolute data persistence on the host machine's disk, preventing any data loss during container lifecycles (docker-compose down).
 
-- **Champs** : `user` (Relation `ObjectId` avec la collection Users), `orderItems` (Tableau dénormalisé), `shippingAddress`, `paymentMethod`, `paymentResult`, `itemsPrice`, `shippingPrice`, `totalPrice`, `isPaid`, `paidAt`, `isDelivered`, `deliveredAt`.
-- **Bonne pratique de dénormalisation** : Les informations critiques des produits (`name`, `price`, `image_url`) sont copiées en dur dans le document de la commande au moment de l'achat. Cela immunise l'historique des factures clients contre les modifications ultérieures du catalogue par l'administrateur.
+Data Architecture (Mongoose Models)
 
----
+1. User Model
+   Fields: firstName, lastName, email (unique/validated), password (encrypted), role (enum: client/admin), addresses (nested sub-documents), resetPasswordToken, resetPasswordExpire.
 
-## 🚀 Installation et Lancement Rapide
+Security: .pre('save') hook for automated asynchronous password hashing via Bcrypt before database writing.
 
-### 1. Configuration des Environnements
+2. Product Model
+   Fields: name (unique), slug (unique), description, usage (editable instructions), marketing_claim, price, stock, is_bio, category, image_url, rating, num_reviews.
 
-Créez un fichier `.env` dans le dossier racine du Back-end en vous basant sur les variables d'infrastructure (Clés Stripe, identifiants SMTP Mailtrap, configurations JWT).
+Rigour: Strict validation of prices and minimum stocks (min: 0) directly at the ORM layer.
 
-### 2. Démarrage de l'Infrastructure Globale
+3. Order Model
+   Fields: user (ObjectId relationship with Users collection), orderItems (denormalized array), shippingAddress, paymentMethod, paymentResult, itemsPrice, shippingPrice, totalPrice, isPaid, paidAt, isDelivered, deliveredAt.
 
-Pour lancer l'ensemble de l'écosystème (API + Base de données + Persistance), exécutez la commande suivante à la racine du projet :
+Denormalization Best Practice: Critical product information (name, price, image_url) is hard-copied into the order document at the time of purchase. This immunizes client invoice history against subsequent catalog modifications by the administrator.
 
-```bash
+Installation and Quick Start
+
+1. Environment Configuration
+   Create a .env file in the Back-end root directory based on the infrastructure variables (Stripe Keys, SMTP Mailtrap credentials, JWT configurations).
+
+2. Launch Global Infrastructure
+   To launch the entire ecosystem (API + Database + Persistence), run the following command at the project root:
+
+Bash
 docker-compose up --build
-```
-
-📁 Structure Macro du Projet
+Project Macro Structure
 
 afreeca-bio-superfoods/
 ├── backend/
-│ ├── controllers/ # Logique métier et contrôleurs de requêtes (Auth, Order, Product, Stripe)
-│ ├── middleware/ # Intercepteurs de sécurité (Vérification JWT, RBAC Admin)
-│ ├── models/ # Schémas de données Mongoose (User, Product, Order)
-│ ├── routes/ # Routeurs Express RESTful découpés par entité
-│ ├── utils/ # Services utilitaires ( sendEmail via Nodemailer)
-│ ├── Dockerfile # Instructions de construction de l'image de l'API
-│ └── server.js # Point d'entrée principal, configuration CORS et connexion BDD
+│ ├── controllers/ # Business logic and request controllers (Auth, Order, Product, Stripe)
+│ ├── middleware/ # Security interceptors (JWT Verification, Admin RBAC)
+│ ├── models/ # Mongoose data schemas (User, Product, Order)
+│ ├── routes/ # RESTful Express routers split by entity
+│ ├── utils/ # Utility services (sendEmail via Nodemailer)
+│ ├── Dockerfile # API image construction instructions
+│ └── server.js # Main entry point, CORS configuration, and DB connection
 ├── frontend/
 │ ├── src/
-│ │ ├── components/ # Composants d'interface (Navbar, Footer, CookieBanner)
-│ │ ├── contexts/ # Gestionnaires d'états globaux (CartContext)
-│ │ ├── hooks/ # Hooks personnalisés et moteurs d'alertes (useToast)
-│ │ ├── pages/ # Vues de l'application et Dashboard d'administration
-│ │ ├── services/ # Centralisation des appels API Axios (productService)
-│ │ └── index.css # Design System global basé sur les variables HSL
-│ └── docker-compose.yml # Orchestrateur multi-conteneurs (API & MongoDB)
+│ │ ├── components/ # Interface components (Navbar, Footer, CookieBanner)
+│ │ ├── contexts/ # Global state managers (CartContext)
+│ │ ├── hooks/ # Custom hooks and alert engines (useToast)
+│ │ ├── pages/ # Application views and Admin Dashboard
+│ │ ├── services/ # Centralized Axios API calls (productService)
+│ │ └── index.css # Global Design System based on HSL variables
+│ └── docker-compose.yml # Multi-container orchestrator (API & MongoDB)
 
-3. Lancement du Front-end (React)
-   Dans un second terminal, accédez au dossier du Front-end, installez les dépendances et lancez le serveur d'interface :
+3. Launch Front-end (React)
+   In a second terminal, navigate to the Front-end directory, install dependencies, and launch the interface server:
 
 Bash
 npm install
 npm run dev
-L'interface utilisateur sera accessible sur http://localhost:8080.
+The user interface will be accessible at http://localhost:8080.
